@@ -1,5 +1,6 @@
 import {
   useLayoutEffect,
+  useEffect,
   useRef,
   useCallback,
 } from "react";
@@ -55,6 +56,17 @@ const ScrollStack = ({
 
   const isUpdatingRef =
     useRef(false);
+
+  /*
+   * Each card's untransformed document
+   * top, measured once. getBoundingClientRect()
+   * reflects the CSS transform we apply below,
+   * so re-measuring a card mid-scroll would feed
+   * its own translateY back into itself and make
+   * it vibrate between two values.
+   */
+  const cardTopsRef =
+    useRef([]);
 
   /*
    * ----------------------------------------
@@ -162,6 +174,41 @@ const ScrollStack = ({
 
   /*
    * ----------------------------------------
+   * MEASURE CARD TOPS
+   * ----------------------------------------
+   */
+
+  const measureCardTops =
+    useCallback(() => {
+      cardTopsRef.current =
+        cardsRef.current.map((card) => {
+          if (!useWindowScroll) {
+            return card.offsetTop;
+          }
+
+          /*
+           * Strip any existing scroll-driven
+           * transform before reading the rect,
+           * so we measure the real layout
+           * position, not last frame's translateY.
+           */
+          const prevTransform =
+            card.style.transform;
+
+          card.style.transform = "none";
+
+          const top =
+            card.getBoundingClientRect().top +
+            window.scrollY;
+
+          card.style.transform = prevTransform;
+
+          return top;
+        });
+    }, [useWindowScroll]);
+
+  /*
+   * ----------------------------------------
    * UPDATE CARD TRANSFORMS
    * ----------------------------------------
    */
@@ -221,6 +268,7 @@ const ScrollStack = ({
           if (!card) return;
 
           const cardTop =
+            cardTopsRef.current[i] ??
             getElementOffset(card);
 
           /*
@@ -311,6 +359,7 @@ const ScrollStack = ({
               j++
             ) {
               const jCardTop =
+                cardTopsRef.current[j] ??
                 getElementOffset(
                   cardsRef.current[j]
                 );
@@ -741,6 +790,12 @@ const ScrollStack = ({
     );
 
     /*
+     * Measure real card positions before any
+     * scroll transform is applied to them.
+     */
+    measureCardTops();
+
+    /*
      * Start Lenis.
      */
     setupLenis();
@@ -791,9 +846,29 @@ const ScrollStack = ({
     blurAmount,
     useWindowScroll,
     onStackComplete,
+    measureCardTops,
     setupLenis,
     updateCardTransforms,
   ]);
+
+  /*
+   * Re-measure on resize so cached tops don't
+   * go stale when layout reflows.
+   */
+  useEffect(() => {
+    const onResize = () => {
+      measureCardTops();
+      updateCardTransforms();
+    };
+
+    window.addEventListener("resize", onResize);
+
+    return () =>
+      window.removeEventListener(
+        "resize",
+        onResize
+      );
+  }, [measureCardTops, updateCardTransforms]);
 
   /*
    * ----------------------------------------
