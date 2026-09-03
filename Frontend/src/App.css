@@ -1,20 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+html,
+body {
+  font-family: 'Inter', sans-serif;
+  scroll-behavior: smooth;
+  background: #030704;
+}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
-  background: #030704;
-}
+
 
 body {
   margin: 0;
   min-width: 320px;
   background: #030704;
   color: white;
-  font-family: "DM Sans", system-ui, sans-serif;
+  
 }
 
 * {

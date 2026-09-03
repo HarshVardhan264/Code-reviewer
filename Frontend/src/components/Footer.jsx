@@ -1,165 +1,244 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
-const CTA = () => {
+const Footer = () => {
   return (
-    <section className="relative overflow-hidden border-t border-white/[0.06] bg-[#030704] py-32 sm:py-40">
+    <footer className="relative overflow-hidden bg-[#080604] text-[#f4ead7]">
 
-      {/* Background glow */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#5d963e]/[0.07] blur-[130px]" />
+      {/* =====================================================
+          IMAGE HERO
+      ===================================================== */}
 
-      {/* Subtle grid */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.035]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(180,255,130,0.4) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(180,255,130,0.4) 1px, transparent 1px)
-          `,
-          backgroundSize: "70px 70px",
-          maskImage:
-            "radial-gradient(circle at center, black, transparent 70%)",
-          WebkitMaskImage:
-            "radial-gradient(circle at center, black, transparent 70%)",
-        }}
-      />
+      <div className="relative min-h-[40vh] overflow-hidden">
 
-      <div className="relative mx-auto max-w-[900px] px-5 text-center sm:px-8">
+        {/* Background Image */}
+        <div className="absolute inset-0 overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=2200&q=85"
+            alt=""
+            className="h-full w-full object-cover"
+          />
+        </div>
 
-        {/* Label */}
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-[#080604]/65" />
 
-        <div className="mb-7 flex items-center justify-center gap-3">
+        {/* Brown overlay */}
+        <div className="absolute inset-0 bg-[#3b2415]/20 mix-blend-multiply" />
 
-          <span className="h-px w-8 bg-[#82a86d]" />
+        {/* Top fade */}
+        <div className="absolute inset-x-0 top-0 h-[35%] bg-gradient-to-b from-[#080604] to-transparent" />
 
-          <span className="text-[10px] font-medium tracking-[0.28em] text-[#82a86d]">
-            READY TO REVIEW?
-          </span>
+        {/* Bottom fade */}
+        <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-[#080604] via-[#080604]/80 to-transparent" />
 
-          <span className="h-px w-8 bg-[#82a86d]" />
+        {/* Side vignette */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080604]/70 via-transparent to-[#080604]/50" />
+
+        {/* Warm glow */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#b86f32]/[0.08] blur-[180px]" />
+
+        {/* Content */}
+        <div className="relative mx-auto flex min-h-[78vh] max-w-[1500px] flex-col justify-between px-[7vw] py-10 sm:py-14">
+
+          {/* TOP BAR */}
+
+          <div className="flex items-center justify-between">
+
+            <Link
+              to="/"
+              className="text-[20px] font-medium tracking-[-0.05em]"
+            >
+              CodeLens<span className="text-[#c98a4b]">.</span>
+            </Link>
+
+            <div className="flex items-center gap-3">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#c98a4b]" />
+
+              <span className="font-mono text-[9px] tracking-[0.22em] text-[#f4ead7]/40">
+                SYSTEM OPERATIONAL
+              </span>
+            </div>
+
+          </div>
+
+
+          {/* MAIN CONTENT */}
+
+          <div className="pb-12 pt-32">
+
+            {/* Label */}
+
+            <div className="mb-7 flex items-center gap-4">
+
+              <span className="h-px w-9 bg-[#c98a4b]" />
+
+              <span className="font-mono text-[10px] tracking-[0.3em] text-[#c98a4b]">
+                CODELENS
+              </span>
+
+            </div>
+
+
+            {/* Heading */}
+
+            <h2 className="max-w-[1000px] text-[clamp(4rem,9vw,9.5rem)] font-medium leading-[0.84] tracking-[-0.075em]">
+
+              Code review
+              <br />
+
+              <span className="text-[#f4ead7]/45">
+                made clearer.
+              </span>
+
+            </h2>
+
+
+            {/* Short description */}
+
+            <p className="mt-8 max-w-[430px] text-[14px] leading-[1.8] text-[#f4ead7]/50">
+              AI-powered feedback to help you understand and improve your code.
+            </p>
+
+
+            {/* CTA */}
+
+            <div className="mt-8">
+
+              <Link
+                to="/review"
+                className="
+                  group
+                  inline-flex
+                  items-center
+                  gap-4
+                  rounded-[14px]
+                  bg-[#f4ead7]
+                  px-7
+                  py-4
+                  text-[13px]
+                  font-semibold
+                  text-[#17110c]
+                  transition-all
+                  duration-300
+                  hover:-translate-y-1
+                  hover:bg-white
+                  hover:shadow-[0_20px_50px_rgba(201,138,75,0.2)]
+                "
+              >
+                <span>
+                  Start a review
+                </span>
+
+                <span className="text-[17px] transition-transform duration-300 group-hover:translate-x-1">
+                  →
+                </span>
+
+              </Link>
+
+            </div>
+
+          </div>
+
+
+          
+
+        </div>
+
+      </div>
+
+
+      {/* =====================================================
+          SIMPLE FOOTER
+      ===================================================== */}
+
+      <div className="relative mx-auto max-w-[1500px] px-[7vw]">
+
+        {/* Main footer row */}
+
+        <div className="flex flex-col gap-10 border-b border-[#f4ead7]/[0.08] py-14 sm:flex-row sm:items-center sm:justify-between">
+
+          {/* Brand */}
+
+          <div>
+
+            <h3 className="text-[clamp(2rem,3vw,3rem)] font-medium tracking-[-0.05em]">
+              CodeLens<span className="text-[#c98a4b]">.</span>
+            </h3>
+
+            <p className="mt-2 text-[11px] text-[#f4ead7]/30">
+              AI-powered code review.
+            </p>
+
+          </div>
+
+
+          {/* Links */}
+
+          <div className="flex flex-wrap items-center gap-7 text-[11px] text-[#f4ead7]/40">
+
+            <Link
+              to="/"
+              className="transition-colors hover:text-[#f4ead7]"
+            >
+              Home
+            </Link>
+
+            <a
+              href="#about"
+              className="transition-colors hover:text-[#f4ead7]"
+            >
+              About
+            </a>
+
+            <a
+              href="#features"
+              className="transition-colors hover:text-[#f4ead7]"
+            >
+              Features
+            </a>
+
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noreferrer"
+              className="transition-colors hover:text-[#f4ead7]"
+            >
+              GitHub
+            </a>
+
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noreferrer"
+              className="transition-colors hover:text-[#f4ead7]"
+            >
+              LinkedIn
+            </a>
+
+          </div>
 
         </div>
 
 
-        {/* Heading */}
+        {/* Bottom */}
 
-        <h2 className="text-5xl font-medium leading-[0.95] tracking-[-0.06em] text-white sm:text-6xl md:text-7xl">
+        <div className="flex flex-col gap-3 py-6 text-[9px] text-[#f4ead7]/20 sm:flex-row sm:items-center sm:justify-between">
 
-          Let CodeLens
-          <br />
-
-          <span className="text-white/30">
-            take a look.
+          <span>
+            © 2026 CodeLens
           </span>
 
-        </h2>
-
-
-        {/* Description */}
-
-        <p className="mx-auto mt-7 max-w-[570px] text-sm leading-7 text-white/40 sm:text-base">
-          Stop wondering what's hiding inside your codebase.
-          Connect your repository and get an AI-powered review
-          in minutes.
-        </p>
-
-
-        {/* CTA */}
-
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-
-          <Link
-            to="/review"
-            className="
-              group
-              relative
-              flex
-              items-center
-              gap-3
-              overflow-hidden
-              rounded-xl
-              bg-[#b8ff72]
-              px-7
-              py-3.5
-              text-[13px]
-              font-semibold
-              text-[#071006]
-              shadow-[0_0_40px_rgba(184,255,114,0.16)]
-              transition-all
-              duration-300
-              hover:scale-[1.02]
-              hover:bg-[#c8ff91]
-              hover:shadow-[0_0_60px_rgba(184,255,114,0.28)]
-            "
-          >
-
-            {/* shine */}
-
-            <span
-              className="
-                absolute
-                inset-0
-                -translate-x-full
-                bg-gradient-to-r
-                from-transparent
-                via-white/30
-                to-transparent
-                transition-transform
-                duration-700
-                group-hover:translate-x-full
-              "
-            />
-
-            <span className="relative">
-              Start your first review
-            </span>
-
-            <span className="relative text-base transition-transform duration-300 group-hover:translate-x-1">
-              →
-            </span>
-
-          </Link>
-
-
-          <Link
-            to="/about"
-            className="
-              rounded-xl
-              border
-              border-white/[0.1]
-              bg-white/[0.02]
-              px-7
-              py-3.5
-              text-[13px]
-              text-white/50
-              backdrop-blur-md
-              transition
-              hover:border-white/[0.18]
-              hover:bg-white/[0.04]
-              hover:text-white
-            "
-          >
-            Learn how it works
-          </Link>
-
-        </div>
-
-
-        {/* Bottom status */}
-
-        <div className="mt-14 flex items-center justify-center gap-2">
-
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#9be86a] shadow-[0_0_10px_#9be86a]" />
-
-          <span className="font-mono text-[9px] tracking-[0.18em] text-white/20">
-            CODELENS · AI CODE INTELLIGENCE
+          <span className="font-mono tracking-[0.18em]">
+            REVIEW · ANALYZE · IMPROVE
           </span>
 
         </div>
 
       </div>
 
-    </section>
+    </footer>
   );
 };
 
-export default CTA;
+export default Footer;

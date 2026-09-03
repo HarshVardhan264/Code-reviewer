@@ -32,6 +32,7 @@ const Navbar = () => {
             flex
             items-center
             gap-3
+            font-sans
           "
         >
           {/* CodeLens mark */}
@@ -44,14 +45,14 @@ const Navbar = () => {
               w-9
               items-center
               justify-center
-              rounded-xl
+              rounded-[10px]
               border
-              border-[#9be86a]/20
-              bg-[#9be86a]/[0.04]
+              border-[#d99a3e]/30
+              bg-[#d99a3e]/[0.04]
               transition-all
               duration-300
-              group-hover:border-[#9be86a]/40
-              group-hover:bg-[#9be86a]/[0.08]
+              group-hover:border-[#d99a3e]/60
+              group-hover:bg-[#d99a3e]/[0.08]
             "
           >
             {/* Lens */}
@@ -62,7 +63,7 @@ const Navbar = () => {
                 w-[15px]
                 rounded-full
                 border-[2px]
-                border-[#b8ff72]
+                border-[#d99a3e]
               "
             />
 
@@ -76,7 +77,7 @@ const Navbar = () => {
                 h-[3px]
                 w-[3px]
                 rounded-full
-                bg-white
+                bg-[#f1e8d7]
               "
             />
 
@@ -91,20 +92,22 @@ const Navbar = () => {
                 w-[7px]
                 rotate-45
                 rounded-full
-                bg-[#b8ff72]
+                bg-[#d99a3e]
               "
             />
           </div>
+
+          {/* Logo text */}
 
           <span
             className="
               text-[18px]
               font-semibold
-              tracking-[-0.04em]
-              text-white
+              tracking-[-0.045em]
+              text-[#f1e8d7]
             "
           >
-            Code<span className="text-[#9be86a]">Lens</span>
+            Code<span className="text-[#d99a3e]">Lens</span>
           </span>
         </Link>
 
@@ -119,12 +122,15 @@ const Navbar = () => {
             gap-1
             rounded-full
             border
-            border-white/[0.06]
-            bg-white/[0.018]
+            border-[#d9a14a]/15
+            bg-[#f1e8d7]/[0.025]
             p-1
+            backdrop-blur-md
             md:flex
           "
         >
+          {/* Home */}
+
           <Link
             to="/"
             className={`
@@ -132,17 +138,20 @@ const Navbar = () => {
               px-5
               py-2.5
               text-[13px]
+              font-medium
               transition-all
               duration-300
               ${
                 isActive("/")
-                  ? "bg-white/[0.08] text-white"
-                  : "text-white/45 hover:text-white/80"
+                  ? "bg-[#f1e8d7]/[0.10] text-[#f1e8d7]"
+                  : "text-[#c8bfb0]/55 hover:text-[#f1e8d7]/90"
               }
             `}
           >
             Home
           </Link>
+
+          {/* Review */}
 
           <Link
             to="/review"
@@ -151,17 +160,20 @@ const Navbar = () => {
               px-5
               py-2.5
               text-[13px]
+              font-medium
               transition-all
               duration-300
               ${
                 isActive("/review")
-                  ? "bg-white/[0.08] text-white"
-                  : "text-white/45 hover:text-white/80"
+                  ? "bg-[#f1e8d7]/[0.10] text-[#f1e8d7]"
+                  : "text-[#c8bfb0]/55 hover:text-[#f1e8d7]/90"
               }
             `}
           >
             Review
           </Link>
+
+          {/* Features */}
 
           <a
             href="#features"
@@ -170,14 +182,17 @@ const Navbar = () => {
               px-5
               py-2.5
               text-[13px]
-              text-white/45
+              font-medium
+              text-[#c8bfb0]/55
               transition-all
               duration-300
-              hover:text-white/80
+              hover:text-[#f1e8d7]/90
             "
           >
             Features
           </a>
+
+          {/* How it works */}
 
           <a
             href="#how-it-works"
@@ -186,30 +201,34 @@ const Navbar = () => {
               px-5
               py-2.5
               text-[13px]
-              text-white/45
+              font-medium
+              text-[#c8bfb0]/55
               transition-all
               duration-300
-              hover:text-white/80
+              hover:text-[#f1e8d7]/90
             "
           >
             How it works
           </a>
 
-          <a
-            href="#about"
+          {/* About */}
+
+          <Link
+            to="/about"
             className="
               rounded-full
               px-5
               py-2.5
               text-[13px]
-              text-white/45
+              font-medium
+              text-[#c8bfb0]/55
               transition-all
               duration-300
-              hover:text-white/80
+              hover:text-[#f1e8d7]/90
             "
           >
             About
-          </a>
+          </Link>
         </div>
 
         {/* =================================================
@@ -224,16 +243,16 @@ const Navbar = () => {
             h-[46px]
             items-center
             gap-2.5
-            rounded-full
-            bg-white
+            rounded-[3px]
+            bg-[#f1e8d7]
             px-6
             text-[13px]
-            font-semibold
-            text-[#080b09]
+            font-medium
+            text-[#17130e]
             transition-all
             duration-300
-            hover:bg-[#b8ff72]
-            hover:shadow-[0_0_35px_rgba(184,255,114,0.12)]
+            hover:-translate-y-[1px]
+            hover:bg-[#fff5e2]
           "
         >
           <span>Get Started</span>
@@ -243,7 +262,7 @@ const Navbar = () => {
               text-[15px]
               transition-transform
               duration-300
-              group-hover:translate-x-0.5
+              group-hover:translate-x-1
             "
           >
             →

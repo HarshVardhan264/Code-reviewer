@@ -2,7 +2,8 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 
-import WebThreads from "./WebThreads";
+import Navbar from "./Navbar";
+import GhostFibers from "./GhostFibers";
 
 const Hero = () => {
   const heroRef = useRef(null);
@@ -21,50 +22,31 @@ const Hero = () => {
         duration: 0.6,
       })
         .from(
-          ".hero-title-line",
+          ".hero-title",
           {
-            y: 65,
+            y: 45,
             opacity: 0,
             duration: 0.9,
-            stagger: 0.12,
           },
-          "-=0.25"
+          "-=0.3"
         )
         .from(
           ".hero-description",
           {
             y: 20,
             opacity: 0,
-            duration: 0.65,
-          },
-          "-=0.35"
-        )
-        .from(
-          ".hero-buttons",
-          {
-            y: 20,
-            opacity: 0,
-            duration: 0.65,
-          },
-          "-=0.4"
-        )
-        .from(
-          ".code-decoration",
-          {
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.12,
+            duration: 0.6,
           },
           "-=0.45"
         )
         .from(
-          ".scroll-indicator",
+          ".hero-buttons",
           {
-            y: 12,
+            y: 18,
             opacity: 0,
-            duration: 0.5,
+            duration: 0.6,
           },
-          "-=0.2"
+          "-=0.35"
         );
     }, heroRef);
 
@@ -76,45 +58,51 @@ const Hero = () => {
       ref={heroRef}
       className="
         relative
-        min-h-[100svh]
+        h-[100svh]
+        min-h-screen
+        w-full
         overflow-hidden
-        bg-[#020504]
-        text-white
+        bg-[#0c0a08]
+        text-[#f1e8d8]
       "
     >
       {/* =====================================================
-          BACKGROUND THREADS
+          BACKGROUND
       ====================================================== */}
 
-      <div className="pointer-events-none absolute inset-0">
-        <WebThreads
-          color1="#315526"
-          color2="#6b9d4d"
-          color3="#456d32"
-          speed={0.09}
-          threadCount={9}
-          frequency={4.5}
-          spread={0.19}
-          taper={1}
-          position={0.5}
-          fanMode="center"
-          glow={0.08}
-          falloff={1}
-          thickness={0.75}
-          brightness={0.24}
-          opacity={0.44}
-          mirror={true}
-          shimmer={false}
-          grain={true}
-          grainIntensity={0.006}
-          mouseInteraction={true}
-          mouseStrength={0.12}
+      <div className="absolute inset-0 z-0">
+        <GhostFibers
+          lineColor="#6f4b20"
+          glowColor="#c8892d"
+          speed={0.14}
+          scale={2.15}
+          rotation={0}
+          rotationSpeed={0.06}
+          layers={5}
+          waveAmplitude={0.018}
+          waveFrequency={3}
+          waveSpeed={0.12}
+          layerSpeed={0.05}
+          twist={0.1}
+          twistFrequency={5}
+          twistSpeed={1}
+          lineFrequency={5}
+          lineSpacing={2}
+          lineSharpness={15}
+          glowFalloff={9}
+          glowIntensity={1.1}
+          brightness={1.35}
+          blueBoost={1}
+          vignette={1}
+          grain={0.02}
+          lightMode={false}
+          dpr={1}
+          fps={60}
         />
       </div>
 
       {/* =====================================================
-          CENTRAL DARKENING
-          Keeps the typography readable
+          DARK OVERLAY
       ====================================================== */}
 
       <div
@@ -123,121 +111,120 @@ const Hero = () => {
           absolute
           inset-0
           z-10
-          bg-[radial-gradient(ellipse_at_center,rgba(2,5,4,0.90)_0%,rgba(2,5,4,0.70)_32%,rgba(2,5,4,0.22)_68%,rgba(2,5,4,0.60)_100%)]
+          bg-[radial-gradient(circle_at_50%_42%,rgba(70,48,22,0.18),rgba(12,10,8,0.76)_68%,rgba(12,10,8,0.96)_100%)]
         "
       />
-
-      {/* =====================================================
-          TOP / BOTTOM VIGNETTE
-      ====================================================== */}
 
       <div
         className="
           pointer-events-none
           absolute
-          inset-0
+          inset-x-0
+          bottom-0
           z-10
-          bg-gradient-to-b
-          from-[#020504]/65
-          via-transparent
-          to-[#020504]/85
+          h-[30%]
+          bg-gradient-to-t
+          from-[#0c0a08]
+          to-transparent
         "
       />
 
       {/* =====================================================
-          LEFT TOP CODE
+          NAVBAR
+      ====================================================== */}
+
+      <Navbar />
+
+      {/* =====================================================
+          DECORATIVE CODE — LEFT
       ====================================================== */}
 
       <div
         className="
-          code-decoration
           pointer-events-none
           absolute
           left-7
-          top-[31%]
+          top-[32%]
           z-20
           hidden
           font-mono
-          text-[9px]
-          leading-5
-          text-[#9be86a]/15
+          text-[8px]
+          tracking-wide
+          text-[#c8892d]/25
           xl:block
         "
       >
         <div>0101 0011 1010</div>
 
-        <div className="mt-2 h-px w-6 bg-[#9be86a]/20" />
+        <div className="mt-3 h-px w-7 bg-[#c8892d]/25" />
       </div>
 
       {/* =====================================================
-          LEFT BOTTOM CODE
+          DECORATIVE CODE — LEFT BOTTOM
       ====================================================== */}
 
       <div
         className="
-          code-decoration
           pointer-events-none
           absolute
-          bottom-[22%]
+          bottom-[16%]
           left-7
           z-20
           hidden
           font-mono
-          text-[9px]
-          leading-5
-          text-[#9be86a]/15
+          text-[8px]
+          tracking-wide
+          text-[#c8892d]/25
           xl:block
         "
       >
         <div>const review = true;</div>
 
-        <div className="mt-2 h-px w-6 bg-[#9be86a]/20" />
+        <div className="mt-3 h-px w-7 bg-[#c8892d]/25" />
       </div>
 
       {/* =====================================================
-          RIGHT TOP CODE
+          DECORATIVE CODE — RIGHT
       ====================================================== */}
 
       <div
         className="
-          code-decoration
           pointer-events-none
           absolute
           right-7
-          top-[40%]
+          top-[37%]
           z-20
           hidden
           text-right
           font-mono
-          text-[9px]
-          leading-5
-          text-[#9be86a]/15
+          text-[8px]
+          tracking-wide
+          text-[#c8892d]/25
           xl:block
         "
       >
         <div>analyze(repository)</div>
 
-        <div className="mt-2 ml-auto h-px w-6 bg-[#9be86a]/20" />
+        <div className="mt-3 ml-auto h-px w-7 bg-[#c8892d]/25" />
       </div>
 
       {/* =====================================================
-          RIGHT BOTTOM CODE
+          DECORATIVE CODE — RIGHT BOTTOM
       ====================================================== */}
 
       <div
         className="
-          code-decoration
           pointer-events-none
           absolute
-          bottom-[22%]
+          bottom-[16%]
           right-7
           z-20
           hidden
           text-right
           font-mono
-          text-[9px]
-          leading-5
-          text-[#9be86a]/15
+          text-[8px]
+          tracking-wide
+          text-[#c8892d]/25
           xl:block
         "
       >
@@ -245,33 +232,44 @@ const Hero = () => {
       </div>
 
       {/* =====================================================
-          MAIN CONTENT
+          HERO CONTENT
       ====================================================== */}
 
-      <div
+      <main
         className="
           relative
-          z-20
-          mx-auto
+          z-30
           flex
-          min-h-[100svh]
+          h-full
           w-full
-          max-w-[1500px]
           flex-col
           items-center
           justify-center
-          px-8
-          py-28
+          px-6
+          pt-[90px]
           text-center
-          sm:px-12
-          lg:px-16
+          sm:px-10
         "
       >
         {/* ===================================================
             LABEL
         ==================================================== */}
 
-        
+        <div
+          className="
+            hero-label
+            mb-7
+            font-sans
+            text-[9px]
+            font-medium
+            uppercase
+            tracking-[0.38em]
+            text-[#c8892d]/80
+            sm:text-[10px]
+          "
+        >
+          AI-powered code review
+        </div>
 
         {/* ===================================================
             MAIN HEADING
@@ -279,10 +277,11 @@ const Hero = () => {
 
         <h1
           className="
+            hero-title
             w-full
-            max-w-[1360px]
-            text-center
-            font-medium
+            max-w-[1250px]
+            font-sans
+            font-semibold
             tracking-[-0.065em]
           "
         >
@@ -290,11 +289,10 @@ const Hero = () => {
 
           <span
             className="
-              hero-title-line
               block
-              text-[clamp(3.2rem,7.2vw,8rem)]
-              leading-[0.94]
-              text-white
+              text-[clamp(3.7rem,6.7vw,7rem)]
+              leading-[0.92]
+              text-[#f1e8d8]
             "
           >
             Your code deserves
@@ -304,27 +302,17 @@ const Hero = () => {
 
           <span
             className="
-              hero-title-line
-              mt-4
+              mt-1
               block
-              text-[clamp(3.2rem,7.2vw,8rem)]
-              leading-[0.94]
+              text-[clamp(3.7rem,6.7vw,7rem)]
+              leading-[0.92]
             "
           >
-            <span className="text-white/30">
+            <span className="text-[#aaa196]/60">
               a second{" "}
             </span>
 
-            <span
-              className="
-                bg-gradient-to-r
-                from-[#9be86a]
-                via-[#b8ff72]
-                to-[#82c95a]
-                bg-clip-text
-                text-transparent
-              "
-            >
+            <span className="text-[#d99532]">
               pair of eyes.
             </span>
           </span>
@@ -337,13 +325,15 @@ const Hero = () => {
         <p
           className="
             hero-description
-            mt-11
+            mt-8
             max-w-[650px]
-            px-4
-            text-[14px]
-            leading-7
-            text-white/50
-            sm:text-[15px]
+            font-sans
+            text-[13px]
+            font-normal
+            leading-[1.8]
+            tracking-[-0.01em]
+            text-[#c9c0b2]/65
+            sm:text-[14px]
           "
         >
           CodeLens reads your repository like another engineer would —
@@ -352,48 +342,51 @@ const Hero = () => {
         </p>
 
         {/* ===================================================
-            CTA BUTTONS
+            BUTTONS
         ==================================================== */}
 
         <div
           className="
             hero-buttons
-            mt-11
+            mt-8
             flex
-            flex-col
             items-center
-            gap-4
-            sm:flex-row
+            justify-center
+            gap-3
           "
         >
-          {/* Primary */}
+          {/* PRIMARY */}
 
           <Link
             to="/review"
             className="
               group
               flex
-              h-[58px]
-              min-w-[220px]
+              h-[54px]
+              min-w-[180px]
               items-center
               justify-center
               gap-4
-              rounded-full
-              bg-[#b8ff72]
-              px-8
-              text-[14px]
+              rounded-[18px]
+              bg-[#f1e8d8]
+              px-7
+              font-sans
+              text-[13px]
               font-semibold
-              text-[#071006]
+              tracking-[-0.01em]
+              text-[#17130f]
               transition-all
               duration-300
-              hover:bg-[#c7ff91]
-              hover:shadow-[0_0_45px_rgba(184,255,114,0.14)]
+              hover:-translate-y-[2px]
+              hover:bg-[#fff6e8]
+              hover:shadow-[0_10px_35px_rgba(217,149,50,0.12)]
             "
           >
             <span>Start a review</span>
 
             <span
               className="
+                text-[16px]
                 transition-transform
                 duration-300
                 group-hover:translate-x-1
@@ -403,64 +396,69 @@ const Hero = () => {
             </span>
           </Link>
 
-          {/* Secondary */}
+          {/* SECONDARY */}
 
           <a
             href="#how-it-works"
             className="
               flex
-              h-[58px]
-              min-w-[220px]
+              h-[54px]
+              min-w-[180px]
               items-center
               justify-center
-              rounded-full
+              rounded-[18px]
               border
-              border-white/[0.14]
-              bg-white/[0.015]
-              px-8
-              text-[14px]
-              text-white/55
+              border-[#c8892d]/25
+              bg-[#0c0a08]/35
+              px-7
+              font-sans
+              text-[13px]
+              font-medium
+              tracking-[-0.01em]
+              text-[#d8cfc1]/65
+              backdrop-blur-sm
               transition-all
               duration-300
-              hover:border-[#9be86a]/30
-              hover:bg-white/[0.025]
-              hover:text-white
+              hover:-translate-y-[2px]
+              hover:border-[#c8892d]/45
+              hover:bg-[#c8892d]/[0.05]
+              hover:text-[#f1e8d8]
             "
           >
             See how it works
           </a>
         </div>
+      </main>
 
-        {/* ===================================================
-            SCROLL INDICATOR
-        ==================================================== */}
+      {/* =====================================================
+          SCROLL INDICATOR
+      ====================================================== */}
 
-        <div
+      <div
+        className="
+          absolute
+          bottom-5
+          left-1/2
+          z-40
+          flex
+          -translate-x-1/2
+          flex-col
+          items-center
+          gap-2
+        "
+      >
+        <span
           className="
-            scroll-indicator
-            absolute
-            bottom-5
-            left-1/2
-            flex
-            -translate-x-1/2
-            flex-col
-            items-center
-            gap-2
+            font-mono
+            text-[7px]
+            tracking-[0.42em]
+            text-[#c8892d]/50
           "
         >
-          <span
-            className="
-              font-mono
-              text-[7px]
-              tracking-[0.35em]
-              text-[#9be86a]/45
-            "
-          >
-            SCROLL
-          </span>
+          SCROLL
+        </span>
 
-          <span className="h-7 w-px bg-[#9be86a]/20" />
-        </div>
+        <span className="h-6 w-px bg-[#c8892d]/25" />
       </div>
     </section>
   );

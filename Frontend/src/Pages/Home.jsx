@@ -21,7 +21,6 @@ const Home = () => {
 
         <HowItWorks />
 
-        <CTA />
 
         <Footer />
       </main>
