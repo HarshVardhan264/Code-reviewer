@@ -173,24 +173,7 @@ const Navbar = () => {
             Review
           </Link>
 
-          {/* Features */}
 
-          <a
-            href="#features"
-            className="
-              rounded-full
-              px-5
-              py-2.5
-              text-[13px]
-              font-medium
-              text-[#c8bfb0]/55
-              transition-all
-              duration-300
-              hover:text-[#f1e8d7]/90
-            "
-          >
-            Features
-          </a>
 
           {/* How it works */}
 
