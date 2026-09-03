@@ -14,6 +14,7 @@ function Review() {
     const [error, setError] = useState("");
 
     const pageRef = useRef(null);
+    const orbRef = useRef(null);
     const eyebrowRef = useRef(null);
     const titleRef = useRef(null);
     const descriptionRef = useRef(null);
@@ -22,7 +23,7 @@ function Review() {
     const resultRef = useRef(null);
 
     // ==========================================
-    // HERO ANIMATION
+    // PAGE ANIMATION
     // ==========================================
 
     useEffect(() => {
@@ -36,35 +37,45 @@ function Review() {
             tl.from(eyebrowRef.current, {
                 opacity: 0,
                 y: 20,
-                duration: 0.7,
+                duration: 0.6,
             })
+                .from(
+                    orbRef.current,
+                    {
+                        opacity: 0,
+                        scale: 0.6,
+                        duration: 0.8,
+                        ease: "back.out(1.7)",
+                    },
+                    "-=0.3"
+                )
                 .from(
                     titleRef.current,
                     {
                         opacity: 0,
-                        y: 50,
-                        duration: 1,
+                        y: 35,
+                        duration: 0.8,
                     },
-                    "-=0.35"
+                    "-=0.4"
                 )
                 .from(
                     descriptionRef.current,
                     {
                         opacity: 0,
-                        y: 25,
-                        duration: 0.7,
+                        y: 20,
+                        duration: 0.6,
                     },
-                    "-=0.55"
+                    "-=0.45"
                 )
                 .from(
                     inputRef.current,
                     {
                         opacity: 0,
-                        y: 35,
-                        scale: 0.97,
+                        y: 30,
+                        scale: 0.98,
                         duration: 0.8,
                     },
-                    "-=0.35"
+                    "-=0.3"
                 )
                 .from(
                     statusRef.current,
@@ -73,22 +84,41 @@ function Review() {
                         y: 15,
                         duration: 0.5,
                     },
-                    "-=0.3"
+                    "-=0.35"
                 );
 
-            // Main warm glow
-            gsap.to(".review-glow", {
-                x: 25,
-                y: -30,
-                duration: 5,
+            // Floating orb
+            gsap.to(orbRef.current, {
+                y: -8,
+                duration: 2.8,
                 repeat: -1,
                 yoyo: true,
                 ease: "sine.inOut",
             });
 
-            // Subtle grid movement
+            // Orb glow
+            gsap.to(".review-orb-glow", {
+                scale: 1.3,
+                opacity: 0.55,
+                duration: 2.5,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+            });
+
+            // Background glow
+            gsap.to(".review-glow", {
+                x: 30,
+                y: -25,
+                duration: 6,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+            });
+
+            // Grid movement
             gsap.to(".review-grid", {
-                y: 35,
+                y: 30,
                 duration: 8,
                 repeat: -1,
                 yoyo: true,
@@ -110,12 +140,12 @@ function Review() {
             resultRef.current,
             {
                 opacity: 0,
-                y: 50,
+                y: 40,
             },
             {
                 opacity: 1,
                 y: 0,
-                duration: 1,
+                duration: 0.9,
                 ease: "power3.out",
             }
         );
@@ -161,65 +191,49 @@ function Review() {
             ref={pageRef}
             className="
                 min-h-screen
-                overflow-hidden
+                overflow-x-hidden
                 bg-[#0b0806]
                 text-[#f4ead7]
             "
         >
+            {/* EXISTING NAVBAR */}
             <Navbar />
 
             <main className="relative pt-[76px]">
-
                 {/* ==========================================
                     BACKGROUND
                 ========================================== */}
 
                 <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
-                    {/* Main warm brown glow */}
+                    {/* Main glow */}
 
                     <div
                         className="
                             review-glow
                             absolute
                             left-1/2
-                            top-[5%]
-                            h-[550px]
+                            top-[4%]
+                            h-[600px]
                             w-[750px]
                             -translate-x-1/2
                             rounded-full
-                            bg-[#c98a4b]/[0.08]
-                            blur-[140px]
+                            bg-[#c98a4b]/[0.07]
+                            blur-[150px]
                         "
                     />
 
-                    {/* Secondary brown glow */}
+                    {/* Secondary glow */}
 
                     <div
                         className="
                             absolute
-                            right-[-180px]
-                            top-[38%]
-                            h-[500px]
-                            w-[500px]
+                            right-[-200px]
+                            top-[45%]
+                            h-[450px]
+                            w-[450px]
                             rounded-full
-                            bg-[#70401f]/[0.12]
+                            bg-[#70401f]/[0.08]
                             blur-[140px]
-                        "
-                    />
-
-                    {/* Small green accent glow */}
-
-                    <div
-                        className="
-                            absolute
-                            left-[-150px]
-                            top-[55%]
-                            h-[350px]
-                            w-[350px]
-                            rounded-full
-                            bg-[#9be86a]/[0.025]
-                            blur-[120px]
                         "
                     />
 
@@ -230,7 +244,7 @@ function Review() {
                             review-grid
                             absolute
                             inset-0
-                            opacity-[0.035]
+                            opacity-[0.025]
                         "
                         style={{
                             backgroundImage: `
@@ -244,7 +258,7 @@ function Review() {
                                     transparent 1px
                                 )
                             `,
-                            backgroundSize: "70px 70px",
+                            backgroundSize: "80px 80px",
                         }}
                     />
 
@@ -255,7 +269,7 @@ function Review() {
                             absolute
                             inset-x-0
                             top-0
-                            h-[350px]
+                            h-[300px]
                             bg-gradient-to-b
                             from-[#0b0806]
                             to-transparent
@@ -269,7 +283,7 @@ function Review() {
                             absolute
                             inset-x-0
                             bottom-0
-                            h-[350px]
+                            h-[300px]
                             bg-gradient-to-t
                             from-[#0b0806]
                             to-transparent
@@ -278,302 +292,457 @@ function Review() {
                 </div>
 
                 {/* ==========================================
-                    REVIEW HERO
+                    APPLICATION WORKSPACE
                 ========================================== */}
 
                 <section
                     className="
                         relative
+                        min-h-[calc(100vh-76px)]
                         px-5
-                        pb-28
-                        pt-24
-                        sm:pb-36
-                        sm:pt-32
+                        pb-20
+                        pt-12
+                        sm:px-8
+                        sm:pt-16
                     "
                 >
-                    <div className="mx-auto max-w-[1200px]">
+                    <div
+                        className="
+                            mx-auto
+                            flex
+                            min-h-[calc(100vh-180px)]
+                            max-w-[1250px]
+                            flex-col
+                        "
+                    >
+                        
+                       
 
-                        {/* ==================================
-                            HEADER
-                        ================================== */}
+                        {/* ======================================
+                            CENTRAL WORKSPACE
+                        ====================================== */}
 
-                        <div className="mx-auto max-w-4xl text-center">
-
-                            {/* Eyebrow */}
-
+                        {!result && !loading && (
                             <div
-                                ref={eyebrowRef}
                                 className="
-                                    mb-7
                                     flex
+                                    flex-1
+                                    flex-col
                                     items-center
-                                    justify-center
-                                    gap-3
                                 "
                             >
-                                <span className="h-px w-8 bg-[#c98a4b]/60" />
-
-                                <span
-                                    className="
-                                        font-mono
-                                        text-[10px]
-                                        font-medium
-                                        tracking-[0.35em]
-                                        text-[#c98a4b]
-                                    "
-                                >
-                                    CODELENS / REVIEW
-                                </span>
-
-                                <span className="h-px w-8 bg-[#c98a4b]/60" />
-                            </div>
-
-                            {/* Main heading */}
-
-                            <h1
-                                ref={titleRef}
-                                className="
-                                    text-[clamp(3.5rem,8vw,7.5rem)]
-                                    font-medium
-                                    leading-[0.88]
-                                    tracking-[-0.075em]
-                                    text-[#f4ead7]
-                                "
-                            >
-                                Understand
-                                <br />
-
-                                <span className="text-[#f4ead7]/35">
-                                    your code.
-                                </span>
-                            </h1>
-
-                            {/* Description */}
-
-                            <p
-                                ref={descriptionRef}
-                                className="
-                                    mx-auto
-                                    mt-8
-                                    max-w-2xl
-                                    text-[15px]
-                                    leading-7
-                                    text-[#f4ead7]/45
-                                    sm:text-[17px]
-                                "
-                            >
-                                Give CodeLens a GitHub repository.
-                                Our AI reviews the codebase and finds
-                                bugs, security risks, performance issues,
-                                and opportunities to improve code quality.
-                            </p>
-                        </div>
-
-                        {/* ==================================
-                            REPOSITORY INPUT
-                        ================================== */}
-
-                        <div
-                            ref={inputRef}
-                            className="
-                                mx-auto
-                                mt-14
-                                max-w-4xl
-                            "
-                        >
-                            <div
-                                className="
-                                    relative
-                                    overflow-hidden
-                                    rounded-[24px]
-                                    border
-                                    border-[#f4ead7]/[0.09]
-                                    bg-[#f4ead7]/[0.025]
-                                    p-2
-                                    shadow-[0_30px_100px_rgba(0,0,0,0.45)]
-                                    backdrop-blur-xl
-                                "
-                            >
-
-                                {/* Top gold accent */}
+                                {/* AI ORB */}
 
                                 <div
+                                    ref={orbRef}
                                     className="
-                                        absolute
-                                        left-1/2
-                                        top-0
-                                        h-px
-                                        w-1/2
-                                        -translate-x-1/2
-                                        bg-gradient-to-r
-                                        from-transparent
-                                        via-[#c98a4b]/70
-                                        to-transparent
-                                    "
-                                />
-
-                                <div
-                                    className="
-                                        rounded-[18px]
-                                        border
-                                        border-[#f4ead7]/[0.04]
-                                        bg-[#17100b]/90
-                                        p-4
-                                        sm:p-6
+                                        relative
+                                        mt-[clamp(65px,10vh,110px)]
+                                        flex
+                                        h-16
+                                        w-16
+                                        items-center
+                                        justify-center
                                     "
                                 >
-
-                                    {/* Input header */}
+                                    <div
+                                        className="
+                                            review-orb-glow
+                                            absolute
+                                            inset-[-22px]
+                                            rounded-full
+                                            bg-[#c98a4b]/20
+                                            blur-[25px]
+                                        "
+                                    />
 
                                     <div
                                         className="
-                                            mb-4
+                                            relative
                                             flex
+                                            h-12
+                                            w-12
                                             items-center
-                                            justify-between
+                                            justify-center
+                                            rounded-full
+                                            border
+                                            border-[#c98a4b]/30
+                                            bg-[#24160d]
+                                            shadow-[0_0_50px_rgba(201,138,75,0.18)]
                                         "
                                     >
-                                        <div className="flex items-center gap-2">
-
-                                            <span
-                                                className="
-                                                    h-2
-                                                    w-2
-                                                    rounded-full
-                                                    bg-[#9be86a]
-                                                    shadow-[0_0_12px_#9be86a]
-                                                "
-                                            />
-
-                                            <span
-                                                className="
-                                                    font-mono
-                                                    text-[10px]
-                                                    tracking-[0.2em]
-                                                    text-[#f4ead7]/40
-                                                "
-                                            >
-                                                REPOSITORY URL
-                                            </span>
-
-                                        </div>
+                                        <span
+                                            className="
+                                                h-3
+                                                w-3
+                                                rounded-full
+                                                bg-[#c98a4b]
+                                                shadow-[0_0_20px_#c98a4b]
+                                            "
+                                        />
 
                                         <span
                                             className="
-                                                hidden
-                                                font-mono
-                                                text-[9px]
-                                                tracking-[0.15em]
-                                                text-[#f4ead7]/20
-                                                sm:block
+                                                absolute
+                                                inset-2
+                                                rounded-full
+                                                border
+                                                border-[#c98a4b]/10
                                             "
-                                        >
-                                            GITHUB
-                                        </span>
+                                        />
                                     </div>
-
-                                    {/* Existing RepoInput */}
-
-                                    <RepoInput
-                                        repoUrl={repoUrl}
-                                        setRepoUrl={setRepoUrl}
-                                        handleReview={handleReview}
-                                        loading={loading}
-                                    />
-
                                 </div>
-                            </div>
 
-                            {/* Error */}
+                                {/* HEADER */}
 
-                            {error && (
                                 <div
+                                    ref={eyebrowRef}
                                     className="
-                                        mt-4
-                                        rounded-xl
-                                        border
-                                        border-red-400/10
-                                        bg-red-400/[0.04]
-                                        px-4
-                                        py-3
-                                        text-center
-                                        text-sm
-                                        text-red-400/80
+                                        mt-5
+                                        flex
+                                        items-center
+                                        gap-3
                                     "
                                 >
-                                    {error}
+                                    <span className="h-px w-7 bg-[#c98a4b]/50" />
+
+                                    <span
+                                        className="
+                                            font-mono
+                                            text-[9px]
+                                            tracking-[0.3em]
+                                            text-[#c98a4b]
+                                        "
+                                    >
+                                        REPOSITORY REVIEW
+                                    </span>
+
+                                    <span className="h-px w-7 bg-[#c98a4b]/50" />
                                 </div>
-                            )}
-                        </div>
 
-                        {/* ==================================
-                            STATUS
-                        ================================== */}
+                                {/* TITLE */}
 
-                        <div
-                            ref={statusRef}
-                            className="
-                                mx-auto
-                                mt-8
-                                flex
-                                items-center
-                                justify-center
-                                gap-3
-                                text-[10px]
-                                tracking-[0.18em]
-                                text-[#f4ead7]/25
-                            "
-                        >
-                            <span className="h-px w-10 bg-[#f4ead7]/[0.08]" />
+                                <h1
+                                    ref={titleRef}
+                                    className="
+                                        mt-5
+                                        text-center
+                                        text-[clamp(3rem,7vw,6.5rem)]
+                                        font-medium
+                                        leading-[0.9]
+                                        tracking-[-0.075em]
+                                    "
+                                >
+                                    Ready to review
+                                    <br />
 
-                            <span>
-                                {loading
-                                    ? "ANALYZING CODEBASE"
-                                    : "READY TO ANALYZE"}
-                            </span>
+                                    <span className="text-[#f4ead7]/30">
+                                        your code?
+                                    </span>
+                                </h1>
 
-                            <span className="h-px w-10 bg-[#f4ead7]/[0.08]" />
-                        </div>
+                                {/* DESCRIPTION */}
+
+                                <p
+                                    ref={descriptionRef}
+                                    className="
+                                        mx-auto
+                                        mt-6
+                                        max-w-xl
+                                        text-center
+                                        text-[13px]
+                                        leading-6
+                                        text-[#f4ead7]/35
+                                        sm:text-[15px]
+                                    "
+                                >
+                                    Paste a GitHub repository URL and let
+                                    CodeLens analyze the codebase for bugs,
+                                    security risks, performance issues, and
+                                    code quality problems.
+                                </p>
+
+                                {/* ==================================
+                                    REPOSITORY COMPOSER
+                                ================================== */}
+
+                                <div
+                                    ref={inputRef}
+                                    className="
+                                        mt-9
+                                        w-full
+                                        max-w-[780px]
+                                    "
+                                >
+                                    <div
+                                        className="
+                                            relative
+                                            overflow-hidden
+                                            rounded-[24px]
+                                            border
+                                            border-[#f4ead7]/[0.09]
+                                            bg-[#f4ead7]/[0.025]
+                                            p-2
+                                            shadow-[0_35px_110px_rgba(0,0,0,0.45)]
+                                            backdrop-blur-xl
+                                            transition-all
+                                            duration-500
+                                            focus-within:border-[#c98a4b]/25
+                                            focus-within:shadow-[0_35px_110px_rgba(201,138,75,0.08)]
+                                        "
+                                    >
+                                        {/* Accent */}
+
+                                        <div
+                                            className="
+                                                absolute
+                                                left-1/2
+                                                top-0
+                                                h-px
+                                                w-1/2
+                                                -translate-x-1/2
+                                                bg-gradient-to-r
+                                                from-transparent
+                                                via-[#c98a4b]/70
+                                                to-transparent
+                                            "
+                                        />
+
+                                        <div
+                                            className="
+                                                rounded-[18px]
+                                                border
+                                                border-[#f4ead7]/[0.04]
+                                                bg-[#17100b]/95
+                                                p-5
+                                                sm:p-6
+                                            "
+                                        >
+                                            {/* Input header */}
+
+                                            <div
+                                                className="
+                                                    mb-5
+                                                    flex
+                                                    items-center
+                                                    justify-between
+                                                "
+                                            >
+                                                <div className="flex items-center gap-2.5">
+                                                    <span
+                                                        className="
+                                                            flex
+                                                            h-7
+                                                            w-7
+                                                            items-center
+                                                            justify-center
+                                                            rounded-lg
+                                                            bg-[#c98a4b]/10
+                                                            text-[#c98a4b]
+                                                        "
+                                                    >
+                                                        ↗
+                                                    </span>
+
+                                                    <div>
+                                                        <p
+                                                            className="
+                                                                font-mono
+                                                                text-[9px]
+                                                                tracking-[0.18em]
+                                                                text-[#f4ead7]/45
+                                                            "
+                                                        >
+                                                            GITHUB REPOSITORY
+                                                        </p>
+
+                                                        <p className="mt-0.5 text-[9px] text-[#f4ead7]/20">
+                                                            Enter the repository
+                                                            you want CodeLens to
+                                                            review
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <span
+                                                    className="
+                                                        hidden
+                                                        font-mono
+                                                        text-[8px]
+                                                        tracking-[0.15em]
+                                                        text-[#f4ead7]/15
+                                                        sm:block
+                                                    "
+                                                >
+                                                    HTTPS
+                                                </span>
+                                            </div>
+
+                                            {/* Existing RepoInput */}
+
+                                            <RepoInput
+                                                repoUrl={repoUrl}
+                                                setRepoUrl={setRepoUrl}
+                                                handleReview={handleReview}
+                                                loading={loading}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Error */}
+
+                                    {error && (
+                                        <div
+                                            className="
+                                                mt-3
+                                                rounded-xl
+                                                border
+                                                border-red-400/10
+                                                bg-red-400/[0.04]
+                                                px-4
+                                                py-3
+                                                text-center
+                                                text-[11px]
+                                                text-red-400/80
+                                            "
+                                        >
+                                            {error}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* STATUS */}
+
+                                <div
+                                    ref={statusRef}
+                                    className="
+                                        mt-6
+                                        flex
+                                        items-center
+                                        justify-center
+                                        gap-3
+                                        text-[8px]
+                                        tracking-[0.22em]
+                                        text-[#f4ead7]/20
+                                    "
+                                >
+                                    <span className="h-px w-8 bg-[#f4ead7]/[0.07]" />
+
+                                    <span className="flex items-center gap-2">
+                                        <span className="h-1 w-1 rounded-full bg-[#9be86a]" />
+                                        SECURE REPOSITORY ANALYSIS
+                                    </span>
+
+                                    <span className="h-px w-8 bg-[#f4ead7]/[0.07]" />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ======================================
+                            LOADING
+                        ====================================== */}
+
+                        {loading && (
+                            <div
+                                className="
+                                    flex
+                                    flex-1
+                                    items-center
+                                    justify-center
+                                    px-2
+                                    py-16
+                                "
+                            >
+                                <div className="w-full max-w-[850px]">
+                                    <Loading />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ======================================
+                            RESULT
+                        ====================================== */}
+
+                        {result && !loading && (
+                            <section
+                                ref={resultRef}
+                                className="
+                                    flex-1
+                                    px-1
+                                    py-10
+                                    sm:px-4
+                                    sm:py-14
+                                "
+                            >
+                                <div className="mx-auto max-w-[1150px]">
+                                    <div
+                                        className="
+                                            mb-8
+                                            flex
+                                            items-end
+                                            justify-between
+                                            gap-4
+                                            border-b
+                                            border-[#f4ead7]/[0.07]
+                                            pb-5
+                                        "
+                                    >
+                                        <div>
+                                            <p
+                                                className="
+                                                    font-mono
+                                                    text-[9px]
+                                                    tracking-[0.22em]
+                                                    text-[#c98a4b]
+                                                "
+                                            >
+                                                CODE REVIEW COMPLETE
+                                            </p>
+
+                                            <h2
+                                                className="
+                                                    mt-2
+                                                    text-2xl
+                                                    font-medium
+                                                    tracking-[-0.04em]
+                                                    sm:text-3xl
+                                                "
+                                            >
+                                                Repository analysis
+                                            </h2>
+                                        </div>
+
+                                        <button
+                                            onClick={() => {
+                                                setResult(null);
+                                                setRepoUrl("");
+                                                setError("");
+                                            }}
+                                            className="
+                                                shrink-0
+                                                rounded-full
+                                                border
+                                                border-[#f4ead7]/[0.08]
+                                                px-4
+                                                py-2
+                                                text-[9px]
+                                                text-[#f4ead7]/40
+                                                transition-all
+                                                hover:border-[#c98a4b]/20
+                                                hover:bg-[#f4ead7]/[0.04]
+                                                hover:text-[#f4ead7]/70
+                                            "
+                                        >
+                                            New review
+                                        </button>
+                                    </div>
+
+                                    <ReviewResult result={result} />
+                                </div>
+                            </section>
+                        )}
                     </div>
                 </section>
-
-                {/* ==========================================
-                    LOADING
-                ========================================== */}
-
-                {loading && (
-                    <section
-                        className="
-                            relative
-                            border-t
-                            border-[#f4ead7]/[0.06]
-                            bg-[#0b0806]
-                        "
-                    >
-                        <Loading />
-                    </section>
-                )}
-
-                {/* ==========================================
-                    REVIEW RESULT
-                ========================================== */}
-
-                {result && !loading && (
-                    <section
-                        ref={resultRef}
-                        className="
-                            relative
-                            border-t
-                            border-[#f4ead7]/[0.06]
-                            bg-[#0b0806]
-                            px-5
-                            py-20
-                            sm:py-28
-                        "
-                    >
-                        <ReviewResult result={result} />
-                    </section>
-                )}
             </main>
         </div>
     );
