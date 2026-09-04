@@ -5,7 +5,7 @@ import json
 load_dotenv()
 
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
+    model="gemini-3.6-flash",
     temperature=0
 )
 
@@ -96,7 +96,24 @@ QUALITY FINDINGS:
 
     response = llm.invoke(prompt)
 
-    content = response.content.strip()
+    # Gemini/LangChain may return content as either a string
+    # or a list of content blocks.
+    content = response.content
+
+    if isinstance(content, list):
+        text_parts = []
+
+        for item in content:
+            if isinstance(item, dict):
+                text = item.get("text", "")
+                if text:
+                    text_parts.append(text)
+            elif isinstance(item, str):
+                text_parts.append(item)
+
+        content = "".join(text_parts)
+
+    content = str(content).strip()
 
     # Remove markdown code fences if Gemini adds them
     if content.startswith("```"):

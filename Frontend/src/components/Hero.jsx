@@ -1,9 +1,10 @@
+
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 
 import Navbar from "./Navbar";
-import GhostFibers from "./GhostFibers";
+import AeroShards from "./AeroShards";
 
 const Hero = () => {
   const heroRef = useRef(null);
@@ -62,47 +63,50 @@ const Hero = () => {
         min-h-screen
         w-full
         overflow-hidden
-        bg-[#0c0a08]
-        text-[#f1e8d8]
+        bg-[#080604]
+        text-[#F4EAD7]
       "
     >
       {/* =====================================================
-          BACKGROUND
+          BACKGROUND — AEROSHARDS
       ====================================================== */}
 
       <div className="absolute inset-0 z-0">
-        <GhostFibers
-          lineColor="#6f4b20"
-          glowColor="#c8892d"
-          speed={0.14}
-          scale={2.15}
-          rotation={0}
-          rotationSpeed={0.06}
-          layers={5}
-          waveAmplitude={0.018}
-          waveFrequency={3}
-          waveSpeed={0.12}
-          layerSpeed={0.05}
-          twist={0.1}
-          twistFrequency={5}
-          twistSpeed={1}
-          lineFrequency={5}
-          lineSpacing={2}
-          lineSharpness={15}
-          glowFalloff={9}
-          glowIntensity={1.1}
-          brightness={1.35}
-          blueBoost={1}
-          vignette={1}
-          grain={0.02}
-          lightMode={false}
-          dpr={1}
-          fps={60}
+        <AeroShards
+          backgroundColor="#080604"
+          shardColor="#C98A4B"
+          accentColor="#C98A4B"
+          placement="full"
+          flow="stream"
+          material="pearl"
+          detail="balanced"
+          effect="none"
+          scale={1}
+          spread={1}
+          depth={1}
+          speed={1}
+          spin={1}
+          interaction="repel"
+          density={1.5}
+          shardSize={1.1}
+          stretch={1}
+          turbulence={1}
+          glow={1}
+          edgeSoftness={2}
+          bloom={0.5}
+          grain={0.05}
+          chromaticAberration={0.0075}
+          transitionDuration={1}
+          interactionRadius={1.5}
+          interactionStrength={0.5}
+          rippleIntensity={1}
+          holdToGather
+          paused={false}
         />
       </div>
 
       {/* =====================================================
-          DARK OVERLAY
+          WARM AMBER OVERLAY
       ====================================================== */}
 
       <div
@@ -111,9 +115,13 @@ const Hero = () => {
           absolute
           inset-0
           z-10
-          bg-[radial-gradient(circle_at_50%_42%,rgba(70,48,22,0.18),rgba(12,10,8,0.76)_68%,rgba(12,10,8,0.96)_100%)]
+          bg-[radial-gradient(circle_at_50%_42%,rgba(201,138,75,0.10),rgba(8,6,4,0.72)_68%,rgba(8,6,4,0.96)_100%)]
         "
       />
+
+      {/* =====================================================
+          BOTTOM FADE
+      ====================================================== */}
 
       <div
         className="
@@ -124,7 +132,7 @@ const Hero = () => {
           z-10
           h-[30%]
           bg-gradient-to-t
-          from-[#0c0a08]
+          from-[#080604]
           to-transparent
         "
       />
@@ -150,13 +158,13 @@ const Hero = () => {
           font-mono
           text-[8px]
           tracking-wide
-          text-[#c8892d]/25
+          text-[#C98A4B]/25
           xl:block
         "
       >
         <div>0101 0011 1010</div>
 
-        <div className="mt-3 h-px w-7 bg-[#c8892d]/25" />
+        <div className="mt-3 h-px w-7 bg-[#C98A4B]/25" />
       </div>
 
       {/* =====================================================
@@ -174,13 +182,13 @@ const Hero = () => {
           font-mono
           text-[8px]
           tracking-wide
-          text-[#c8892d]/25
+          text-[#C98A4B]/25
           xl:block
         "
       >
         <div>const review = true;</div>
 
-        <div className="mt-3 h-px w-7 bg-[#c8892d]/25" />
+        <div className="mt-3 h-px w-7 bg-[#C98A4B]/25" />
       </div>
 
       {/* =====================================================
@@ -199,13 +207,13 @@ const Hero = () => {
           font-mono
           text-[8px]
           tracking-wide
-          text-[#c8892d]/25
+          text-[#C98A4B]/25
           xl:block
         "
       >
         <div>analyze(repository)</div>
 
-        <div className="mt-3 ml-auto h-px w-7 bg-[#c8892d]/25" />
+        <div className="mt-3 ml-auto h-px w-7 bg-[#C98A4B]/25" />
       </div>
 
       {/* =====================================================
@@ -224,7 +232,7 @@ const Hero = () => {
           font-mono
           text-[8px]
           tracking-wide
-          text-[#c8892d]/25
+          text-[#C98A4B]/25
           xl:block
         "
       >
@@ -264,7 +272,7 @@ const Hero = () => {
             font-medium
             uppercase
             tracking-[0.38em]
-            text-[#c8892d]/80
+            text-[#C98A4B]/85
             sm:text-[10px]
           "
         >
@@ -292,7 +300,7 @@ const Hero = () => {
               block
               text-[clamp(3.7rem,6.7vw,7rem)]
               leading-[0.92]
-              text-[#f1e8d8]
+              text-[#F4EAD7]
             "
           >
             Your code deserves
@@ -308,11 +316,11 @@ const Hero = () => {
               leading-[0.92]
             "
           >
-            <span className="text-[#aaa196]/60">
+            <span className="text-[#F4EAD7]/60">
               a second{" "}
             </span>
 
-            <span className="text-[#d99532]">
+            <span className="text-[#C98A4B]">
               pair of eyes.
             </span>
           </span>
@@ -332,7 +340,7 @@ const Hero = () => {
             font-normal
             leading-[1.8]
             tracking-[-0.01em]
-            text-[#c9c0b2]/65
+            text-[#F4EAD7]/65
             sm:text-[14px]
           "
         >
@@ -368,18 +376,18 @@ const Hero = () => {
               justify-center
               gap-4
               rounded-[18px]
-              bg-[#f1e8d8]
+              bg-[#F4EAD7]
               px-7
               font-sans
               text-[13px]
               font-semibold
               tracking-[-0.01em]
-              text-[#17130f]
+              text-[#100B07]
               transition-all
               duration-300
               hover:-translate-y-[2px]
-              hover:bg-[#fff6e8]
-              hover:shadow-[0_10px_35px_rgba(217,149,50,0.12)]
+              hover:bg-white
+              hover:shadow-[0_10px_35px_rgba(201,138,75,0.20)]
             "
           >
             <span>Start a review</span>
@@ -408,21 +416,21 @@ const Hero = () => {
               justify-center
               rounded-[18px]
               border
-              border-[#c8892d]/25
-              bg-[#0c0a08]/35
+              border-[#C98A4B]/25
+              bg-[#080604]/40
               px-7
               font-sans
               text-[13px]
               font-medium
               tracking-[-0.01em]
-              text-[#d8cfc1]/65
+              text-[#F4EAD7]/70
               backdrop-blur-sm
               transition-all
               duration-300
               hover:-translate-y-[2px]
-              hover:border-[#c8892d]/45
-              hover:bg-[#c8892d]/[0.05]
-              hover:text-[#f1e8d8]
+              hover:border-[#C98A4B]/50
+              hover:bg-[#C98A4B]/[0.07]
+              hover:text-[#F4EAD7]
             "
           >
             See how it works
@@ -452,13 +460,13 @@ const Hero = () => {
             font-mono
             text-[7px]
             tracking-[0.42em]
-            text-[#c8892d]/50
+            text-[#C98A4B]/50
           "
         >
           SCROLL
         </span>
 
-        <span className="h-6 w-px bg-[#c8892d]/25" />
+        <span className="h-6 w-px bg-[#C98A4B]/25" />
       </div>
     </section>
   );
