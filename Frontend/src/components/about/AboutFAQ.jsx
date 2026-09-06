@@ -89,25 +89,66 @@ const AboutFAQ = () => {
             className="relative overflow-hidden bg-[#f3eadb] px-6 py-28 text-[#211812] sm:px-10 sm:py-36 lg:px-14 lg:py-40"
         >
             <div className="mx-auto max-w-[1380px]">
-                {/* Header */}
-                <div className="mb-20 grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-                    <div className="faq-label flex items-center gap-3">
-                        <span className="h-[5px] w-[5px] rounded-full bg-[#ad6d36]" />
+                {/* HEADER */}
 
-                        <span className="font-mono text-[9px] tracking-[0.3em] text-[#8f5d32]">
-                            FREQUENTLY ASKED
-                        </span>
+                <div className="mb-20 grid items-start gap-10 lg:grid-cols-2">
+
+                    {/* LEFT — FREQUENTLY ASKED */}
+
+                    <div className="faq-label flex items-start gap-4">
+
+                        <span
+                            className="
+                mt-[18px]
+                h-[6px]
+                w-[6px]
+                shrink-0
+                rounded-full
+                bg-[#ad6d36]
+            "
+                        />
+
+                        <h2
+                            className="
+                text-[clamp(3rem,6vw,6.2rem)]
+                font-medium
+                leading-[0.9]
+                tracking-[-0.07em]
+                text-[#8f5d32]
+            "
+                        >
+                            Frequently
+                            <br />
+                            Asked
+                        </h2>
+
                     </div>
 
-                    <div>
-                        <h2 className="faq-heading max-w-[900px] text-[clamp(3rem,6vw,6.2rem)] font-medium leading-[0.9] tracking-[-0.07em]">
+
+                    {/* RIGHT — QUESTIONS */}
+
+                    <div className="faq-heading">
+
+                        <h2
+                            className="
+                text-[clamp(3rem,6vw,6.2rem)]
+                font-medium
+                leading-[0.9]
+                tracking-[-0.07em]
+                text-[#211812]
+            "
+                        >
                             Questions,
                             <br />
+
                             <span className="text-[#211812]/30">
                                 answered clearly.
                             </span>
+
                         </h2>
+
                     </div>
+
                 </div>
 
                 {/* FAQ */}
@@ -137,22 +178,20 @@ const AboutFAQ = () => {
                                     </div>
 
                                     <span
-                                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#211812]/15 text-[18px] font-light transition-all duration-300 ${
-                                            isOpen
-                                                ? "rotate-45 bg-[#211812] text-[#f3eadb]"
-                                                : "text-[#211812]/50"
-                                        }`}
+                                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#211812]/15 text-[18px] font-light transition-all duration-300 ${isOpen
+                                            ? "rotate-45 bg-[#211812] text-[#f3eadb]"
+                                            : "text-[#211812]/50"
+                                            }`}
                                     >
                                         +
                                     </span>
                                 </button>
 
                                 <div
-                                    className={`grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(.22,1,.36,1)] ${
-                                        isOpen
-                                            ? "grid-rows-[1fr]"
-                                            : "grid-rows-[0fr]"
-                                    }`}
+                                    className={`grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(.22,1,.36,1)] ${isOpen
+                                        ? "grid-rows-[1fr]"
+                                        : "grid-rows-[0fr]"
+                                        }`}
                                 >
                                     <div className="overflow-hidden">
                                         <div className="pb-8 pl-[45px] sm:pl-[72px]">

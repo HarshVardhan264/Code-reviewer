@@ -2,288 +2,706 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 
+/* =========================================================
+   LENS
+========================================================= */
+
+export const Lens = ({ size = "0.78em" }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+        className="inline-block align-[-0.02em]"
+    >
+        <circle
+            cx="12"
+            cy="12"
+            r="10.5"
+            stroke="currentColor"
+            strokeWidth="2.4"
+        />
+
+        <circle
+            cx="12"
+            cy="12"
+            r="4"
+            stroke="currentColor"
+            strokeWidth="2.4"
+        />
+    </svg>
+);
+
+
+/* =========================================================
+   ARROW
+========================================================= */
+
+export const ArrowTile = () => (
+    <svg
+        width="13"
+        height="13"
+        viewBox="0 0 12 12"
+        fill="none"
+        aria-hidden="true"
+    >
+        <path
+            d="M2 10L10 2M10 2H3.5M10 2V8.5"
+            stroke="currentColor"
+            strokeWidth="1.6"
+        />
+    </svg>
+);
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
 const NavbarAbout = () => {
-    const navRef = useRef(null);
-    const lastScrollY = useRef(0);
-    const [isVisible, setIsVisible] = useState(true);
+    const [solid, setSolid] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const menuRef = useRef(null);
+    const overlayRef = useRef(null);
+    const menuItemsRef = useRef([]);
+
+    /* =====================================================
+       SCROLL DETECTION
+    ===================================================== */
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.fromTo(
-                navRef.current,
-                {
-                    y: -100,
-                    opacity: 0,
-                },
-                {
-                    y: 0,
-                    opacity: 1,
-                    duration: 1,
-                    ease: "power4.out",
-                }
-            );
-        }, navRef);
-
         const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-
-            // Always show navbar near the top
-            if (currentScrollY < 80) {
-                setIsVisible(true);
-            }
-            // Scrolling down → hide
-            else if (currentScrollY > lastScrollY.current) {
-                setIsVisible(false);
-            }
-            // Scrolling up → show
-            else {
-                setIsVisible(true);
-            }
-
-            lastScrollY.current = currentScrollY;
+            setSolid(window.scrollY > window.innerHeight * 0.7);
         };
+
+        handleScroll();
 
         window.addEventListener("scroll", handleScroll, {
             passive: true,
         });
 
         return () => {
-            ctx.revert();
             window.removeEventListener("scroll", handleScroll);
         };
     }, []);
 
+
+    /* =====================================================
+       LOCK BODY WHEN MENU OPEN
+    ===================================================== */
+
     useEffect(() => {
-        gsap.to(navRef.current, {
-            y: isVisible ? 0 : -120,
-            opacity: isVisible ? 1 : 0,
-            duration: 0.45,
-            ease: "power3.out",
-        });
-    }, [isVisible]);
+        if (menuOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [menuOpen]);
+
+
+    /* =====================================================
+       MENU GSAP ANIMATION
+    ===================================================== */
+
+    useEffect(() => {
+        if (!menuRef.current || !overlayRef.current) return;
+
+        if (menuOpen) {
+
+            gsap.to(overlayRef.current, {
+                opacity: 1,
+                duration: 0.45,
+                ease: "power2.out",
+                pointerEvents: "auto",
+            });
+
+            gsap.to(menuRef.current, {
+                x: "0%",
+                duration: 0.7,
+                ease: "power4.out",
+            });
+
+            gsap.fromTo(
+                menuItemsRef.current,
+                {
+                    x: 50,
+                    opacity: 0,
+                },
+                {
+                    x: 0,
+                    opacity: 1,
+                    duration: 0.55,
+                    stagger: 0.08,
+                    delay: 0.25,
+                    ease: "power3.out",
+                }
+            );
+
+        } else {
+
+            gsap.to(overlayRef.current, {
+                opacity: 0,
+                duration: 0.35,
+                ease: "power2.inOut",
+                pointerEvents: "none",
+            });
+
+            gsap.to(menuRef.current, {
+                x: "100%",
+                duration: 0.6,
+                ease: "power4.inOut",
+            });
+        }
+
+    }, [menuOpen]);
+
+
+    /* =====================================================
+       CLOSE MENU
+    ===================================================== */
+
+    const closeMenu = () => {
+        setMenuOpen(false);
+    };
+
 
     return (
-        <header
-            ref={navRef}
-            className="
-                fixed
-                left-0
-                right-0
-                top-0
-                z-[9999]
-            "
-        >
-            <div className="mx-auto max-w-[1440px] px-6 pt-5 sm:px-10 lg:px-14">
+        <>
+            {/* =================================================
+                NAVBAR
+            ================================================= */}
 
-                <nav
+            <header
+                className="
+                    fixed
+                    left-0
+                    top-0
+                    z-[1000]
+                    w-full
+                "
+            >
+                <div
                     className="
-                        flex
-                        h-[60px]
+                        grid
+                        h-[90px]
+                        w-full
+                        grid-cols-[1fr_auto_1fr]
                         items-center
-                        justify-between
+                        px-[5.25vw]
                     "
                 >
 
-                    {/* LOGO */}
+                    {/* =================================================
+                        CODELENS LOGO
+
+                        SAME SIZE / COLOR / STRUCTURE
+                    ================================================= */}
 
                     <Link
                         to="/"
+                        aria-label="CodeLens home"
                         className="
-                            group
+                            cl-nav__mark
                             flex
                             items-center
-                            gap-3
                             text-[18px]
                             font-semibold
                             tracking-[-0.045em]
                             text-[#211812]
+                            no-underline
+                            transition-opacity
+                            duration-300
+                            hover:opacity-70
                         "
                     >
-                        <span
-                            className="
-                                flex
-                                h-9
-                                w-9
-                                items-center
-                                justify-center
-                                rounded-[10px]
-                                border
-                                border-[#211812]/20
-                                bg-[#f3eadb]/70
-                                text-[#a9682f]
-                                transition-all
-                                duration-300
-                                group-hover:border-[#a9682f]/50
-                                group-hover:bg-[#e8d8c0]
-                            "
-                        >
-                            <svg
-                                width="19"
-                                height="19"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                            >
-                                <circle
-                                    cx="10.5"
-                                    cy="10.5"
-                                    r="6.5"
-                                    stroke="currentColor"
-                                    strokeWidth="1.8"
-                                />
-
-                                <path
-                                    d="M16 16L21 21"
-                                    stroke="currentColor"
-                                    strokeWidth="1.8"
-                                    strokeLinecap="round"
-                                />
-                            </svg>
-                        </span>
+                        C<Lens />
 
                         <span>
-                            Code
-                            <span className="text-[#a9682f]">
-                                Lens
-                            </span>
+                            delens
                         </span>
                     </Link>
 
 
-                    {/* CENTER NAV */}
+                    {/* =================================================
+                        CENTER LINKS
+                    ================================================= */}
 
-                    <div
-                        className="
-                            absolute
-                            left-1/2
-                            hidden
-                            -translate-x-1/2
+                    <nav
+                        className={`
+                            flex
                             items-center
-                            gap-1
-                            rounded-full
-                            border
-                            border-[#211812]/15
-                            bg-[#eee2cf]/90
-                            px-2
-                            py-2
-                            shadow-[0_4px_20px_rgba(33,24,18,0.04)]
-                            backdrop-blur-md
-                            md:flex
-                        "
+                            gap-[34px]
+                            transition-all
+                            duration-500
+                            max-md:hidden
+
+                            ${
+                                solid
+                                    ? "pointer-events-none translate-y-[-10px] opacity-0"
+                                    : "translate-y-0 opacity-100"
+                            }
+                        `}
                     >
 
-                        <Link
-                            to="/"
-                            className="
-                                rounded-full
-                                px-5
-                                py-2
-                                text-[12px]
-                                font-medium
-                                text-[#211812]/70
-                                transition-all
-                                duration-300
-                                hover:bg-[#211812]/[0.07]
-                                hover:text-[#211812]
-                            "
-                        >
-                            Home
-                        </Link>
-
-                        <Link
-                            to="/review"
-                            className="
-                                rounded-full
-                                px-5
-                                py-2
-                                text-[12px]
-                                font-medium
-                                text-[#211812]/70
-                                transition-all
-                                duration-300
-                                hover:bg-[#211812]/[0.07]
-                                hover:text-[#211812]
-                            "
-                        >
-                            Review
-                        </Link>
-
-                        
-
                         <a
-                            href="/#how-it-works"
+                            href="/#reads"
                             className="
-                                rounded-full
-                                px-5
-                                py-2
-                                text-[12px]
+                                text-[14px]
                                 font-medium
-                                text-[#211812]/70
-                                transition-all
+                                tracking-[-0.02em]
+                                text-[#211812]
+                                no-underline
+                                transition-opacity
                                 duration-300
-                                hover:bg-[#211812]/[0.07]
-                                hover:text-[#211812]
+                                hover:opacity-60
                             "
                         >
-                            How it works
+                            What it reads
                         </a>
 
-                        <span
+
+                        <a
+                            href="/#process"
                             className="
-                                rounded-full
-                                bg-[#211812]/[0.09]
-                                px-5
-                                py-2
-                                text-[12px]
-                                font-semibold
+                                text-[14px]
+                                font-medium
+                                tracking-[-0.02em]
                                 text-[#211812]
+                                no-underline
+                                transition-opacity
+                                duration-300
+                                hover:opacity-60
+                            "
+                        >
+                            Process
+                        </a>
+
+
+                        <Link
+                            to="/about"
+                            className="
+                                text-[14px]
+                                font-medium
+                                tracking-[-0.02em]
+                                text-[#211812]
+                                no-underline
+                                transition-opacity
+                                duration-300
+                                hover:opacity-60
                             "
                         >
                             About
-                        </span>
+                        </Link>
+
+                    </nav>
+
+
+                    {/* =================================================
+                        RIGHT SIDE
+                    ================================================= */}
+
+                    <div className="flex justify-end">
+
+                        {/* =================================================
+                            REVIEW A REPO
+                        ================================================= */}
+
+                        <Link
+                            to="/review"
+                            className={`
+                                flex
+                                items-center
+                                gap-0
+                                transition-all
+                                duration-500
+
+                                ${
+                                    solid
+                                        ? "pointer-events-none translate-y-[-10px] opacity-0"
+                                        : "translate-y-0 opacity-100"
+                                }
+                            `}
+                        >
+
+                            <span
+                                className="
+                                    flex
+                                    h-[46px]
+                                    items-center
+                                    bg-[#211812]
+                                    px-[17px]
+                                    text-[14px]
+                                    font-medium
+                                    text-[#f3eadb]
+                                "
+                            >
+                                Review a repo
+                            </span>
+
+
+                            <span
+                                className="
+                                    flex
+                                    h-[46px]
+                                    w-[46px]
+                                    items-center
+                                    justify-center
+                                    bg-[#211812]
+                                    text-[#f3eadb]
+                                "
+                            >
+                                <ArrowTile />
+                            </span>
+
+                        </Link>
+
+
+                        {/* =================================================
+                            THREE LINE CIRCLE
+
+                            APPEARS AFTER SCROLL
+                        ================================================= */}
+
+                        <button
+                            type="button"
+                            aria-label="Open menu"
+                            aria-expanded={menuOpen}
+                            onClick={() => setMenuOpen(true)}
+                            className={`
+                                flex
+                                h-[58px]
+                                w-[58px]
+                                flex-col
+                                items-center
+                                justify-center
+                                gap-[5px]
+                                rounded-full
+                                bg-[#211812]
+                                text-[#f3eadb]
+                                transition-all
+                                duration-500
+
+                                ${
+                                    solid
+                                        ? "pointer-events-auto scale-100 opacity-100"
+                                        : "pointer-events-none scale-90 opacity-0"
+                                }
+                            `}
+                        >
+
+                            <span
+                                className="
+                                    block
+                                    h-[1.5px]
+                                    w-[22px]
+                                    bg-[#f3eadb]
+                                "
+                            />
+
+                            <span
+                                className="
+                                    block
+                                    h-[1.5px]
+                                    w-[22px]
+                                    bg-[#f3eadb]
+                                "
+                            />
+
+                            <span
+                                className="
+                                    block
+                                    h-[1.5px]
+                                    w-[22px]
+                                    bg-[#f3eadb]
+                                "
+                            />
+
+                        </button>
 
                     </div>
 
+                </div>
+            </header>
 
-                    {/* GET STARTED */}
+
+            {/* =========================================================
+                DARK OVERLAY
+            ========================================================= */}
+
+            <div
+                ref={overlayRef}
+                onClick={closeMenu}
+                className="
+                    pointer-events-none
+                    fixed
+                    inset-0
+                    z-[1050]
+                    bg-black/60
+                    opacity-0
+                "
+            />
+
+
+            {/* =========================================================
+                SIDE MENU
+            ========================================================= */}
+
+            <aside
+                ref={menuRef}
+                className="
+                    fixed
+                    right-0
+                    top-0
+                    z-[1100]
+                    flex
+                    h-screen
+                    w-[420px]
+                    max-w-[88vw]
+                    translate-x-full
+                    flex-col
+                    bg-[#211812]
+                    px-8
+                    py-8
+                    text-[#eeeae1]
+                    shadow-2xl
+                "
+            >
+
+                {/* =================================================
+                    MENU HEADER
+                ================================================= */}
+
+                <div className="flex items-center justify-between">
+
+                    {/* CODELENS */}
 
                     <Link
-                        to="/review"
+                        to="/"
+                        onClick={closeMenu}
                         className="
-                            group
                             flex
                             items-center
-                            gap-3
-                            rounded-full
-                            bg-[#211812]
-                            px-5
-                            py-3
-                            text-[12px]
+                            text-[18px]
                             font-semibold
-                            text-[#f3eadb]
-                            shadow-[0_5px_20px_rgba(33,24,18,0.12)]
-                            transition-all
-                            duration-300
-                            hover:-translate-y-[2px]
-                            hover:bg-[#35271e]
-                            hover:shadow-[0_8px_25px_rgba(33,24,18,0.18)]
+                            tracking-[-0.045em]
+                            text-[#eeeae1]
+                            no-underline
                         "
                     >
-                        Get Started
+                        C<Lens />
 
-                        <span
-                            className="
-                                transition-transform
-                                duration-300
-                                group-hover:translate-x-1
-                            "
-                        >
-                            →
+                        <span>
+                            delens
                         </span>
                     </Link>
 
+
+                    {/* =================================================
+                        CLOSE BUTTON
+                    ================================================= */}
+
+                    <button
+                        type="button"
+                        aria-label="Close menu"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            closeMenu();
+                        }}
+                        className="
+                            relative
+                            z-[1200]
+                            flex
+                            h-[52px]
+                            w-[52px]
+                            cursor-pointer
+                            items-center
+                            justify-center
+                            rounded-full
+                            border
+                            border-[#eeeae1]/30
+                            bg-transparent
+                            text-[#eeeae1]
+                            transition-all
+                            duration-300
+                            hover:bg-[#eeeae1]
+                            hover:text-[#0b0b0a]
+                        "
+                    >
+
+                        {/* CROSS */}
+
+                        <span
+                            className="
+                                absolute
+                                h-[1.5px]
+                                w-[21px]
+                                rotate-45
+                                bg-current
+                            "
+                        />
+
+                        <span
+                            className="
+                                absolute
+                                h-[1.5px]
+                                w-[21px]
+                                -rotate-45
+                                bg-current
+                            "
+                        />
+
+                    </button>
+
+                </div>
+
+
+                {/* =================================================
+                    MENU OPTIONS
+                ================================================= */}
+
+                <nav
+                    className="
+                        mt-auto
+                        flex
+                        flex-col
+                        pb-12
+                    "
+                >
+
+                    {/* WHAT IT READS */}
+
+                    <a
+                        ref={(el) => (menuItemsRef.current[0] = el)}
+                        href="/#reads"
+                        onClick={closeMenu}
+                        className="
+                            border-b
+                            border-[#eeeae1]/20
+                            py-5
+                            text-[32px]
+                            font-medium
+                            tracking-[-0.05em]
+                            text-[#eeeae1]
+                            no-underline
+                            opacity-0
+                            transition-all
+                            duration-300
+                            hover:pl-2
+                        "
+                    >
+                        What it reads
+                    </a>
+
+
+                    {/* PROCESS */}
+
+                    <a
+                        ref={(el) => (menuItemsRef.current[1] = el)}
+                        href="/#process"
+                        onClick={closeMenu}
+                        className="
+                            border-b
+                            border-[#eeeae1]/20
+                            py-5
+                            text-[32px]
+                            font-medium
+                            tracking-[-0.05em]
+                            text-[#eeeae1]
+                            no-underline
+                            opacity-0
+                            transition-all
+                            duration-300
+                            hover:pl-2
+                        "
+                    >
+                        Process
+                    </a>
+
+
+                    {/* ABOUT */}
+
+                    <Link
+                        ref={(el) => (menuItemsRef.current[2] = el)}
+                        to="/about"
+                        onClick={closeMenu}
+                        className="
+                            border-b
+                            border-[#eeeae1]/20
+                            py-5
+                            text-[32px]
+                            font-medium
+                            tracking-[-0.05em]
+                            text-[#eeeae1]
+                            no-underline
+                            opacity-0
+                            transition-all
+                            duration-300
+                            hover:pl-2
+                        "
+                    >
+                        About
+                    </Link>
+
+
+                    {/* REVIEW */}
+
+                    <Link
+                        ref={(el) => (menuItemsRef.current[3] = el)}
+                        to="/review"
+                        onClick={closeMenu}
+                        className="
+                            flex
+                            items-center
+                            justify-between
+                            border-b
+                            border-[#eeeae1]/20
+                            py-5
+                            text-[32px]
+                            font-medium
+                            tracking-[-0.05em]
+                            text-[#eeeae1]
+                            no-underline
+                            opacity-0
+                            transition-all
+                            duration-300
+                            hover:pl-2
+                        "
+                    >
+
+                        <span>
+                            Review a repo
+                        </span>
+
+                        <ArrowTile />
+
+                    </Link>
+
                 </nav>
-            </div>
-        </header>
+
+
+                {/* =================================================
+                    FOOTER
+                ================================================= */}
+
+                <div
+                    className="
+                        text-[10px]
+                        uppercase
+                        tracking-[0.2em]
+                        text-[#eeeae1]/40
+                    "
+                >
+                    CodeLens
+                </div>
+
+            </aside>
+        </>
     );
 };
 

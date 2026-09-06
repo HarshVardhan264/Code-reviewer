@@ -299,16 +299,16 @@ const AboutHero = () => {
                                     items-center
                                     gap-5
                                     rounded-full
-                                    bg-[#211812]
+                                    bg-[#b79d8c]
                                     px-7
                                     py-4
                                     text-[13px]
                                     font-medium
-                                    text-[#f3eadb]
+                                    text-[#d0955b]
                                     shadow-[0_8px_25px_rgba(33,24,18,0.12)]
                                     transition-all
                                     duration-300
-                                    hover:bg-[#382920]
+                                    hover:bg-[#cec6c1]
                                     hover:shadow-[0_12px_30px_rgba(33,24,18,0.16)]
                                 "
                             >
@@ -318,7 +318,7 @@ const AboutHero = () => {
                                     ref={arrowRef}
                                     className="
                                         text-[16px]
-                                        text-[#d0955b]
+                                        text-[#382920]
                                     "
                                 >
                                     →
@@ -476,37 +476,7 @@ const AboutHero = () => {
                 </div>
             </div>
 
-            {/* =========================================
-                SCROLL INDICATOR
-            ========================================= */}
-
-            <div
-                className="
-                    absolute
-                    bottom-6
-                    left-1/2
-                    hidden
-                    -translate-x-1/2
-                    items-center
-                    gap-3
-                    font-mono
-                    text-[8px]
-                    tracking-[0.28em]
-                    text-[#211812]/30
-                    lg:flex
-                "
-            >
-                <span
-                    className="
-                        h-1
-                        w-1
-                        rounded-full
-                        bg-[#ad6d36]
-                    "
-                />
-
-                SCROLL TO EXPLORE
-            </div>
+            
         </section>
     );
 };
