@@ -1,15 +1,532 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
+
+:root {
+    --ink: #0e0e0d;
+    --ink-2: #141413;
+    --bone: #e7e3d9;
+    --ash: #8b867a;
+    --line: rgba(231, 227, 217, 0.14);
+    --dot: rgba(231, 227, 217, 0.28);
+    --add: #8aa36c;
+    --del: #c2705a;
+    --gutter: clamp(1.25rem, 6vw, 5.5rem);
+}
+
 * {
     box-sizing: border-box;
 }
 
 html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
 }
 
 body {
     margin: 0;
-    
-    background: #08090a;
-    color: #f5f5f5;
+    background: var(--ink);
+    color: var(--bone);
+    font-family: "Archivo", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
+}
+
+::selection {
+    background: var(--bone);
+    color: var(--ink);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+:focus-visible {
+    outline: 2px solid var(--bone);
+    outline-offset: 3px;
+}
+
+/* ---------- primitives ---------- */
+
+.cl-shell {
+    margin: 0 auto;
+    max-width: 1560px;
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+}
+
+.cl-mono {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ash);
+}
+
+.cl-rule {
+    border-bottom: 1px dotted var(--dot);
+}
+
+.cl-display {
+    font-weight: 700;
+    font-stretch: 125%;
+    line-height: 0.82;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.cl-statement {
+    font-weight: 500;
+    font-size: clamp(1.6rem, 3.1vw, 3.2rem);
+    line-height: 1.14;
+    letter-spacing: -0.03em;
+    margin: 0;
+}
+
+.cl-prose {
+    color: var(--ash);
+    max-width: 46ch;
+    font-size: clamp(0.95rem, 1.1vw, 1.0625rem);
+    line-height: 1.65;
+}
+
+.cl-grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- chip button ---------- */
+
+.cl-chip {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 1px;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+}
+
+.cl-chip > span:first-child {
+    background: var(--bone);
+    color: var(--ink);
+    padding: 0.55rem 0.95rem;
+}
+
+.cl-chip > span:last-child {
+    background: var(--ink);
+    color: var(--bone);
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    transition: transform 0.25s ease;
+}
+
+.cl-chip:hover > span:last-child {
+    transform: translate(2px, -2px);
+}
+
+.cl-chip--lg {
+    font-size: clamp(1rem, 1.5vw, 1.4rem);
+}
+
+.cl-chip--lg > span:first-child {
+    padding: 0.75rem 1.5rem;
+}
+
+.cl-chip--lg > span:last-child {
+    width: 3.2rem;
+}
+
+/* ---------- nav ---------- */
+
+.cl-nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.1rem var(--gutter);
+}
+
+/* over the hero the bar floats and inverts against the wordmark; past it,
+   it takes its own ground so headings do not scroll through it */
+.cl-hero .cl-nav__mark,
+.cl-hero .cl-nav__links {
+    mix-blend-mode: difference;
+}
+
+.cl-nav--solid {
+    background: rgba(14, 14, 13, 0.88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
+}
+
+.cl-nav--solid .cl-nav__mark,
+.cl-nav--solid .cl-nav__links {
+    mix-blend-mode: normal;
+}
+
+.cl-nav__links {
+    display: none;
+    gap: 1.4rem;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.cl-nav__links a:hover {
+    color: var(--ash);
+}
+
+.cl-nav__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.06em;
+    font-weight: 700;
+    font-stretch: 118%;
+    font-size: 19px;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+
+@media (min-width: 900px) {
+    .cl-nav__links {
+        display: flex;
+    }
+}
+
+/* ---------- hero ---------- */
+
+.cl-hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    padding-top: 6rem;
+}
+
+.cl-hero__vignette {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(120% 70% at 50% 0%, rgba(231, 227, 217, 0.07), transparent 60%),
+        radial-gradient(90% 60% at 50% 100%, rgba(231, 227, 217, 0.035), transparent 70%);
+    pointer-events: none;
+}
+
+.cl-hero__copy {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1.5rem;
+}
+
+.cl-hero__lead {
+    font-weight: 600;
+    font-size: clamp(1.05rem, 1.35vw, 1.35rem);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    max-width: 24ch;
+    margin: 0;
+}
+
+.cl-hero__sub {
+    color: var(--ash);
+    font-weight: 500;
+    max-width: 32ch;
+    margin: 0;
+    font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+}
+
+.cl-hero__mark {
+    position: relative;
+    overflow: hidden;
+    line-height: 0.74;
+}
+
+.cl-hero__mark .cl-display {
+    font-size: 14.1vw;
+    text-align: center;
+    white-space: nowrap;
+    display: block;
+    margin-bottom: -0.15em;
+}
+
+/* ---------- section rail ---------- */
+
+.cl-section {
+    position: relative;
+    padding: clamp(6rem, 12vw, 11rem) 0;
+}
+
+.cl-rail {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 1000px) {
+    .cl-rail {
+        grid-template-columns: 15rem 1fr;
+        gap: 4rem;
+    }
+
+    .cl-rail__label {
+        position: sticky;
+        top: 6rem;
+        align-self: start;
+    }
+}
+
+/* ---------- diff card ---------- */
+
+.cl-diff {
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: clamp(11px, 0.85vw, 13.5px);
+    line-height: 1.85;
+    overflow: hidden;
+}
+
+.cl-diff__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--ash);
+    font-size: 11px;
+}
+
+.cl-diff__body {
+    padding: 0.9rem 0;
+    overflow-x: auto;
+}
+
+.cl-diff__line {
+    display: grid;
+    grid-template-columns: 3.2rem 1.1rem 1fr;
+    white-space: pre;
+    color: rgba(231, 227, 217, 0.72);
+}
+
+.cl-diff__line > span:first-child {
+    color: rgba(231, 227, 217, 0.25);
+    text-align: right;
+    padding-right: 0.9rem;
+}
+
+.cl-diff__line--add {
+    background: rgba(138, 163, 108, 0.09);
+    color: var(--add);
+}
+
+.cl-diff__line--del {
+    background: rgba(194, 112, 90, 0.09);
+    color: var(--del);
+}
+
+.cl-diff__note {
+    border-top: 1px solid var(--line);
+    padding: 1rem;
+    display: grid;
+    gap: 0.5rem;
+    font-family: "Archivo", sans-serif;
+}
+
+.cl-diff__sev {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    background: var(--bone);
+    padding: 0.15rem 0.45rem;
+    justify-self: start;
+}
+
+/* ---------- list rows ---------- */
+
+.cl-row {
+    display: grid;
+    gap: 0.6rem 3rem;
+    padding: 1.75rem 0;
+    align-items: baseline;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cl-row:hover {
+    transform: translateX(0.75rem);
+}
+
+@media (min-width: 800px) {
+    .cl-row {
+        grid-template-columns: 1fr 1.35fr;
+    }
+}
+
+.cl-row .cl-mono {
+    margin-top: 0.9rem;
+    color: rgba(231, 227, 217, 0.4);
+}
+
+/* ---------- overlap statement ---------- */
+
+#reads {
+    padding-top: clamp(2rem, 5vw, 4rem);
+}
+
+.cl-reads {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: clamp(2rem, 4vw, 3.5rem);
+    padding: 0 var(--gutter);
+}
+
+.cl-reads__card {
+    width: min(52rem, 100%);
+}
+
+.cl-reads__head {
+    text-align: center;
+    font-size: clamp(3rem, 11vw, 11rem);
+}
+
+/* ---------- process steps ---------- */
+
+.cl-step {
+    display: grid;
+    gap: 1rem 3rem;
+    padding: 2.25rem 0;
+    align-items: start;
+}
+
+@media (min-width: 900px) {
+    .cl-step {
+        grid-template-columns: 8rem 1fr 16rem;
+    }
+
+    .cl-step__sample {
+        text-align: right;
+    }
+}
+
+.cl-step__index {
+    padding-top: 0.5rem;
+}
+
+.cl-step__sample {
+    color: rgba(231, 227, 217, 0.4);
+    align-self: end;
+}
+
+/* ---------- cta ---------- */
+
+.cl-cta {
+    padding: clamp(7rem, 16vw, 14rem) 0;
+    border-top: 1px dotted var(--dot);
+    background:
+        radial-gradient(70% 60% at 50% 50%, rgba(231, 227, 217, 0.06), transparent 70%);
+}
+
+.cl-cta__head {
+    font-size: clamp(3rem, 10.5vw, 10rem);
+}
+
+/* ---------- footer ---------- */
+
+.cl-foot {
+    padding-top: clamp(4rem, 8vw, 7rem);
+    border-top: 1px solid var(--line);
+}
+
+.cl-foot__grid {
+    display: grid;
+    gap: 3.5rem;
+}
+
+@media (min-width: 1000px) {
+    .cl-foot__grid {
+        grid-template-columns: 1.35fr 1fr;
+        gap: 6rem;
+    }
+}
+
+.cl-foot__aside {
+    display: grid;
+    gap: 2.5rem;
+    align-content: start;
+    padding-top: 0.35rem;
+}
+
+.cl-foot__mail {
+    border-bottom: 1px solid var(--line);
+}
+
+.cl-foot__mail:hover {
+    border-color: var(--bone);
+}
+
+.cl-foot__base {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: clamp(3rem, 7vw, 6rem);
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
+    border-top: 1px dotted var(--dot);
+}
+
+.cl-row__title {
+    font-size: clamp(1.35rem, 2.3vw, 2.1rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin: 0;
+    line-height: 1.05;
+}
+
+/* ---------- footer ---------- */
+
+.cl-foot__link {
+    display: block;
+    font-weight: 600;
+    font-stretch: 112%;
+    font-size: clamp(1.9rem, 4.4vw, 3.4rem);
+    letter-spacing: -0.035em;
+    padding: 0.35rem 0;
+    color: rgba(231, 227, 217, 0.55);
+    transition: color 0.25s ease, transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.cl-foot__link:hover {
+    color: var(--bone);
+    transform: translateX(0.6rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+    }
 }

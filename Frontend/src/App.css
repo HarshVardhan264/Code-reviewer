@@ -4,7 +4,7 @@ html,
 body {
   font-family: 'Inter', sans-serif;
   scroll-behavior: smooth;
-  background: #030704;
+  background: #091540;
 }
 
 @tailwind base;
@@ -16,7 +16,7 @@ body {
 body {
   margin: 0;
   min-width: 320px;
-  background: #030704;
+  background: #091540;
   color: white;
   
 }
@@ -26,7 +26,7 @@ body {
 }
 
 ::selection {
-  background: rgba(184, 255, 114, 0.25);
+  background: rgba(8, 203, 0, 0.25);
   color: white;
 }
 @keyframes scrollLine {
