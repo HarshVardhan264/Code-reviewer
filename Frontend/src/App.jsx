@@ -5,6 +5,7 @@ import Review from "./Pages/Review";
 import About from "./Pages/About";
 import Login from "./Pages/Login"
 import Signup from "./Pages/Signup";
+import Contact from "./Pages/Contact";
 
 function App() {
     return (
@@ -33,6 +34,11 @@ function App() {
             <Route
                 path="/signup"
                 element={<Signup />}
+            />
+
+            <Route
+                path="/contact"
+                element={<Contact />}
             />
 
         </Routes>

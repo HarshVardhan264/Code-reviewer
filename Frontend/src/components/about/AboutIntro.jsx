@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -64,7 +65,6 @@ const AboutIntro = () => {
                     "-=0.3"
                 );
 
-            // Subtle floating animation
             gsap.to(foxRef.current, {
                 y: -10,
                 rotation: 1.5,
@@ -85,9 +85,10 @@ const AboutIntro = () => {
             className="
                 relative
                 overflow-hidden
-                bg-[#f3eadb]
+                bg-[#121213]
                 px-6
                 py-24
+                text-white
                 sm:px-10
                 sm:py-32
                 lg:px-14
@@ -96,20 +97,17 @@ const AboutIntro = () => {
         >
             <div className="relative z-10 mx-auto max-w-[1380px]">
 
-                {/* =====================================================
-                    TOP LABEL
-                ===================================================== */}
+                {/* TOP LABEL */}
 
                 <div className="intro-label mb-10 flex items-center gap-3">
-                    <span className="h-[5px] w-[5px] rounded-full bg-[#ad6d36]" />
+                    <span className="h-[5px] w-[5px] rounded-full bg-white/60" />
 
                     <span
                         className="
-                            font-mono
                             text-[9px]
                             font-medium
                             tracking-[0.3em]
-                            text-[#8f5d32]
+                            text-white/40
                         "
                     >
                         WHY CODELENS
@@ -117,9 +115,7 @@ const AboutIntro = () => {
                 </div>
 
 
-                {/* =====================================================
-                    MAIN HEADING
-                ===================================================== */}
+                {/* MAIN HEADING */}
 
                 <h2
                     className="
@@ -129,20 +125,18 @@ const AboutIntro = () => {
                         font-medium
                         leading-[0.94]
                         tracking-[-0.065em]
-                        text-[#211812]
+                        text-white
                     "
                 >
-                    Code is more than
+                    Good code should
                     <br />
-                    <span className="text-[#211812]/30">
-                        lines on a screen.
+                    <span className="text-white/25">
+                        be understood before it breaks.
                     </span>
                 </h2>
 
 
-                {/* =====================================================
-                    CONTENT
-                ===================================================== */}
+                {/* CONTENT */}
 
                 <div
                     className="
@@ -151,20 +145,31 @@ const AboutIntro = () => {
                         items-center
                         gap-10
                         border-t
-                        border-[#211812]/10
+                        border-white/[0.08]
                         pt-10
                         lg:grid-cols-[0.75fr_1.25fr]
                         lg:gap-20
                     "
                 >
 
-                    {/* =================================================
-                        FOX
-                    ================================================= */}
+                    {/* FOX */}
 
-                    <div className="intro-fox relative flex min-h-[320px] items-end justify-center sm:min-h-[380px] lg:min-h-[420px] lg:justify-start">
+                    <div
+                        className="
+                            intro-fox
+                            relative
+                            flex
+                            min-h-[320px]
+                            items-end
+                            justify-center
+                            sm:min-h-[380px]
+                            lg:min-h-[420px]
+                            lg:justify-start
+                        "
+                    >
 
-                        {/* Soft glow behind fox */}
+                        {/* Soft glow */}
+
                         <div
                             className="
                                 pointer-events-none
@@ -175,12 +180,13 @@ const AboutIntro = () => {
                                 w-[280px]
                                 -translate-x-1/2
                                 rounded-full
-                                bg-[#ad6d36]/10
+                                bg-white/[0.025]
                                 blur-[70px]
                             "
                         />
 
                         {/* Fox */}
+
                         <img
                             ref={foxRef}
                             src="/fox.png"
@@ -191,13 +197,14 @@ const AboutIntro = () => {
                                 h-auto
                                 w-[240px]
                                 object-contain
-                                drop-shadow-[0_25px_30px_rgba(33,24,18,0.12)]
+                                drop-shadow-[0_25px_30px_rgba(255,255,255,0.06)]
                                 sm:w-[280px]
                                 lg:w-[340px]
                             "
                         />
 
-                        {/* Small label */}
+                        {/* Character label */}
+
                         <div
                             className="
                                 absolute
@@ -208,23 +215,27 @@ const AboutIntro = () => {
                                 whitespace-nowrap
                                 rounded-full
                                 border
-                                border-[#211812]/10
-                                bg-[#f3eadb]/80
+                                border-white/[0.08]
+                                bg-[#121213]/80
                                 px-4
                                 py-2
                                 backdrop-blur-sm
                             "
                         >
-                            <span className="font-mono text-[8px] tracking-[0.2em] text-[#211812]/40">
+                            <span
+                                className="
+                                    text-[8px]
+                                    tracking-[0.2em]
+                                    text-white/35
+                                "
+                            >
                                 YOUR SECOND PAIR OF EYES
                             </span>
                         </div>
                     </div>
 
 
-                    {/* =================================================
-                        TEXT
-                    ================================================= */}
+                    {/* TEXT */}
 
                     <div className="intro-text max-w-[720px]">
 
@@ -234,12 +245,12 @@ const AboutIntro = () => {
                                 font-medium
                                 leading-[1.45]
                                 tracking-[-0.025em]
-                                text-[#211812]/85
+                                text-white/85
                                 sm:text-[24px]
                             "
                         >
-                            A repository can hide problems long before
-                            they become bugs.
+                            Code can work perfectly today and still hide
+                            problems waiting for tomorrow.
                         </p>
 
                         <p
@@ -248,58 +259,104 @@ const AboutIntro = () => {
                                 max-w-[650px]
                                 text-[14px]
                                 leading-7
-                                text-[#211812]/50
+                                text-white/45
                                 sm:text-[15px]
                             "
                         >
-                            CodeLens looks beyond whether your code runs.
-                            It examines how your code behaves, where it
-                            could fail, what could become a security risk,
-                            and where a small change today could prevent a
-                            bigger problem tomorrow.
+                            CodeLens reviews your repository with three
+                            specialized AI agents. One looks for bugs,
+                            another searches for security risks, and the
+                            third evaluates code quality. Together, they
+                            turn complex code into clear, actionable insight.
                         </p>
 
 
-                        {/* Small information row */}
+                        {/* INFORMATION ROW */}
 
                         <div
                             className="
+                                intro-meta
                                 mt-10
                                 grid
                                 grid-cols-2
                                 gap-6
                                 border-t
-                                border-[#211812]/10
+                                border-white/[0.08]
                                 pt-6
                                 sm:grid-cols-3
                             "
                         >
                             <div>
-                                <span className="block font-mono text-[8px] tracking-[0.2em] text-[#ad6d36]">
+                                <span
+                                    className="
+                                        block
+                                        text-[8px]
+                                        font-medium
+                                        tracking-[0.2em]
+                                        text-white/50
+                                    "
+                                >
                                     01
                                 </span>
 
-                                <span className="mt-2 block text-[11px] text-[#211812]/45">
+                                <span
+                                    className="
+                                        mt-2
+                                        block
+                                        text-[11px]
+                                        text-white/35
+                                    "
+                                >
                                     Understand
                                 </span>
                             </div>
 
                             <div>
-                                <span className="block font-mono text-[8px] tracking-[0.2em] text-[#ad6d36]">
+                                <span
+                                    className="
+                                        block
+                                        text-[8px]
+                                        font-medium
+                                        tracking-[0.2em]
+                                        text-white/50
+                                    "
+                                >
                                     02
                                 </span>
 
-                                <span className="mt-2 block text-[11px] text-[#211812]/45">
+                                <span
+                                    className="
+                                        mt-2
+                                        block
+                                        text-[11px]
+                                        text-white/35
+                                    "
+                                >
                                     Detect
                                 </span>
                             </div>
 
                             <div>
-                                <span className="block font-mono text-[8px] tracking-[0.2em] text-[#ad6d36]">
+                                <span
+                                    className="
+                                        block
+                                        text-[8px]
+                                        font-medium
+                                        tracking-[0.2em]
+                                        text-white/50
+                                    "
+                                >
                                     03
                                 </span>
 
-                                <span className="mt-2 block text-[11px] text-[#211812]/45">
+                                <span
+                                    className="
+                                        mt-2
+                                        block
+                                        text-[11px]
+                                        text-white/35
+                                    "
+                                >
                                     Improve
                                 </span>
                             </div>
@@ -311,9 +368,7 @@ const AboutIntro = () => {
             </div>
 
 
-            {/* =====================================================
-                BACKGROUND DETAIL
-            ===================================================== */}
+            {/* BACKGROUND DETAIL */}
 
             <div
                 className="
@@ -325,7 +380,7 @@ const AboutIntro = () => {
                     w-[420px]
                     -translate-y-1/2
                     rounded-full
-                    bg-[#ad6d36]/[0.035]
+                    bg-white/[0.012]
                     blur-[100px]
                 "
             />
@@ -339,7 +394,7 @@ const AboutIntro = () => {
                     h-[300px]
                     w-[300px]
                     rounded-full
-                    bg-[#ad6d36]/[0.025]
+                    bg-white/[0.008]
                     blur-[100px]
                 "
             />

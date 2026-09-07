@@ -104,10 +104,17 @@ const AboutHowItWorks = () => {
         return () => ctx.revert();
     }, []);
 
-    const stackCards = [...steps].reverse().map((step)=> (
+    const stackCards = [...steps].reverse().map((step) => (
         <div
             key={step.number}
-            className="relative h-full w-full overflow-hidden rounded-[20px] bg-[#30231c]"
+            className="
+                relative
+                h-full
+                w-full
+                overflow-hidden
+                rounded-[20px]
+                bg-[#0b0b0b]
+            "
         >
             <img
                 src={step.image}
@@ -116,31 +123,59 @@ const AboutHowItWorks = () => {
             />
 
             {/* Dark overlay */}
-            <div className="absolute inset-0 bg-[#211812]/50" />
+            <div className="absolute inset-0 bg-[#121213]/55" />
 
             {/* Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#211812]/90 via-transparent to-[#211812]/20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/20 to-black/30" />
 
             <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-7">
 
                 {/* TOP */}
                 <div className="flex items-start justify-between">
-                    <span className="font-mono text-[10px] tracking-[0.2em] text-[#f3eadb]/70">
+                    <span className="font-mono text-[10px] tracking-[0.2em] text-white/60">
                         {step.number}
                     </span>
 
-                    <span className="rounded-full border border-[#f3eadb]/20 px-3 py-1.5 font-mono text-[8px] tracking-[0.2em] text-[#f3eadb]/70">
+                    <span
+                        className="
+                            rounded-full
+                            border
+                            border-white/15
+                            px-3
+                            py-1.5
+                            font-mono
+                            text-[8px]
+                            tracking-[0.2em]
+                            text-white/60
+                        "
+                    >
                         {step.detail}
                     </span>
                 </div>
 
                 {/* BOTTOM */}
                 <div>
-                    <h3 className="text-[clamp(2rem,4vw,3rem)] font-medium leading-none tracking-[-0.06em] text-[#f3eadb]">
+                    <h3
+                        className="
+                            text-[clamp(2rem,4vw,3rem)]
+                            font-medium
+                            leading-none
+                            tracking-[-0.06em]
+                            text-white
+                        "
+                    >
                         {step.title}
                     </h3>
 
-                    <p className="mt-3 max-w-[310px] text-[12px] leading-5 text-[#f3eadb]/60">
+                    <p
+                        className="
+                            mt-3
+                            max-w-[310px]
+                            text-[12px]
+                            leading-5
+                            text-white/55
+                        "
+                    >
                         {step.description}
                     </p>
                 </div>
@@ -155,9 +190,10 @@ const AboutHowItWorks = () => {
             className="
                 relative
                 overflow-hidden
-                bg-[#f3eadb]
+                bg-[#121213]
                 px-6
                 py-28
+                text-white
                 sm:px-10
                 sm:py-36
                 lg:px-14
@@ -167,11 +203,20 @@ const AboutHowItWorks = () => {
             <div className="mx-auto max-w-[1380px]">
 
                 {/* HEADER */}
-                <div className="mb-20 lg:mb-24">
-                    <div className="how-label mb-8 flex items-center gap-3">
-                        <span className="h-[5px] w-[5px] rounded-full bg-[#ad6d36]" />
 
-                        <span className="font-mono text-[9px] tracking-[0.3em] text-[#8f5d32]">
+                <div className="mb-20 lg:mb-24">
+
+                    <div className="how-label mb-8 flex items-center gap-3">
+                        <span className="h-[5px] w-[5px] rounded-full bg-white/60" />
+
+                        <span
+                            className="
+                                font-mono
+                                text-[9px]
+                                tracking-[0.3em]
+                                text-white/40
+                            "
+                        >
                             HOW CODELENS WORKS
                         </span>
                     </div>
@@ -184,21 +229,32 @@ const AboutHowItWorks = () => {
                             font-medium
                             leading-[0.94]
                             tracking-[-0.065em]
-                            text-[#211812]
+                            text-white
                         "
                     >
                         From repository
                         <br />
-                        <span className="text-[#211812]/30">
+                        <span className="text-white/25">
                             to clarity.
                         </span>
                     </h2>
                 </div>
 
+
                 {/* STACK + CONTENT */}
-                <div className="grid items-center gap-20 lg:grid-cols-[0.85fr_1fr] lg:gap-28">
+
+                <div
+                    className="
+                        grid
+                        items-center
+                        gap-20
+                        lg:grid-cols-[0.85fr_1fr]
+                        lg:gap-28
+                    "
+                >
 
                     {/* STACK */}
+
                     <div className="how-stack flex justify-center lg:justify-start">
                         <div className="h-[340px] w-[340px] sm:h-[400px] sm:w-[400px]">
                             <Stack
@@ -215,88 +271,143 @@ const AboutHowItWorks = () => {
                         </div>
                     </div>
 
+
                     {/* CONTENT */}
+
                     <div className="how-content">
 
                         <div className="mb-10">
-                            <span className="font-mono text-[9px] tracking-[0.25em] text-[#ad6d36]">
+
+                            <span
+                                className="
+                                    font-mono
+                                    text-[9px]
+                                    tracking-[0.25em]
+                                    text-white/40
+                                "
+                            >
                                 THE PROCESS
                             </span>
 
-                            <h3 className="mt-5 max-w-[650px] text-[clamp(2.2rem,4vw,4rem)] font-medium leading-[0.95] tracking-[-0.06em] text-[#211812]">
+                            <h3
+                                className="
+                                    mt-5
+                                    max-w-[650px]
+                                    text-[clamp(2.2rem,4vw,4rem)]
+                                    font-medium
+                                    leading-[0.95]
+                                    tracking-[-0.06em]
+                                    text-white
+                                "
+                            >
                                 Three steps.
                                 <br />
-                                <span className="text-[#211812]/30">
+                                <span className="text-white/25">
                                     One clearer review.
                                 </span>
                             </h3>
                         </div>
 
-                        <div className="border-t border-[#211812]/10">
+
+                        <div className="border-t border-white/[0.08]">
+
                             {steps.map((step) => (
                                 <div
                                     key={step.number}
-                                    className="group flex gap-6 border-b border-[#211812]/10 py-7"
+                                    className="
+                                        group
+                                        flex
+                                        gap-6
+                                        border-b
+                                        border-white/[0.08]
+                                        py-7
+                                    "
                                 >
-                                    <span className="pt-1 font-mono text-[9px] tracking-[0.2em] text-[#ad6d36]">
+
+                                    <span
+                                        className="
+                                            pt-1
+                                            font-mono
+                                            text-[9px]
+                                            tracking-[0.2em]
+                                            text-white/40
+                                        "
+                                    >
                                         {step.number}
                                     </span>
 
                                     <div>
+
                                         <div className="flex items-center gap-4">
-                                            <h4 className="text-[20px] font-medium tracking-[-0.04em] text-[#211812]">
+
+                                            <h4
+                                                className="
+                                                    text-[20px]
+                                                    font-medium
+                                                    tracking-[-0.04em]
+                                                    text-white
+                                                "
+                                            >
                                                 {step.title}
                                             </h4>
 
-                                            <span className="font-mono text-[7px] tracking-[0.2em] text-[#211812]/25 transition-colors duration-300 group-hover:text-[#ad6d36]">
+                                            <span
+                                                className="
+                                                    font-mono
+                                                    text-[7px]
+                                                    tracking-[0.2em]
+                                                    text-white/20
+                                                    transition-colors
+                                                    duration-300
+                                                    group-hover:text-white/60
+                                                "
+                                            >
                                                 {step.detail}
                                             </span>
+
                                         </div>
 
-                                        <p className="mt-2 max-w-[480px] text-[13px] leading-6 text-[#211812]/45">
+                                        <p
+                                            className="
+                                                mt-2
+                                                max-w-[480px]
+                                                text-[13px]
+                                                leading-6
+                                                text-white/40
+                                            "
+                                        >
                                             {step.description}
                                         </p>
+
                                     </div>
 
-                                    <span className="ml-auto self-center text-[#211812]/20 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#ad6d36]">
+                                    <span
+                                        className="
+                                            ml-auto
+                                            self-center
+                                            text-white/20
+                                            transition-all
+                                            duration-300
+                                            group-hover:translate-x-1
+                                            group-hover:text-white/60
+                                        "
+                                    >
                                         →
                                     </span>
+
                                 </div>
                             ))}
+
                         </div>
                     </div>
                 </div>
 
-                {/* BOTTOM */}
-                <div
-                    className="
-                        how-bottom
-                        mt-20
-                        flex
-                        flex-col
-                        gap-5
-                        border-t
-                        border-[#211812]/10
-                        pt-7
-                        sm:flex-row
-                        sm:items-center
-                        sm:justify-between
-                    "
-                >
-                    <p className="max-w-[600px] text-[14px] leading-7 text-[#211812]/45">
-                        No walls of technical jargon. Just a clearer
-                        understanding of what your code is doing and
-                        where it can get better.
-                    </p>
-
-                    <div className="flex items-center gap-3 font-mono text-[8px] tracking-[0.25em] text-[#211812]/30">
-                        <span className="h-1 w-1 rounded-full bg-[#ad6d36]" />
-                        CONNECT · ANALYZE · IMPROVE
-                    </div>
-                </div>
+                
             </div>
 
+
             {/* BACKGROUND DETAIL */}
+
             <div
                 className="
                     pointer-events-none
@@ -306,7 +417,7 @@ const AboutHowItWorks = () => {
                     h-[450px]
                     w-[450px]
                     rounded-full
-                    bg-[#ad6d36]/[0.035]
+                    bg-white/[0.012]
                     blur-[110px]
                 "
             />
@@ -315,3 +426,4 @@ const AboutHowItWorks = () => {
 };
 
 export default AboutHowItWorks;
+

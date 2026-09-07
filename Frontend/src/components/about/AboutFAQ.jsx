@@ -86,36 +86,48 @@ const AboutFAQ = () => {
     return (
         <section
             ref={sectionRef}
-            className="relative overflow-hidden bg-[#f3eadb] px-6 py-28 text-[#211812] sm:px-10 sm:py-36 lg:px-14 lg:py-40"
+            className="
+                relative
+                overflow-hidden
+                bg-[#121213]
+                px-6
+                py-28
+                text-white
+                sm:px-10
+                sm:py-36
+                lg:px-14
+                lg:py-40
+            "
         >
             <div className="mx-auto max-w-[1380px]">
+
                 {/* HEADER */}
 
                 <div className="mb-20 grid items-start gap-10 lg:grid-cols-2">
 
-                    {/* LEFT — FREQUENTLY ASKED */}
+                    {/* LEFT */}
 
                     <div className="faq-label flex items-start gap-4">
 
                         <span
                             className="
-                mt-[18px]
-                h-[6px]
-                w-[6px]
-                shrink-0
-                rounded-full
-                bg-[#ad6d36]
-            "
+                                mt-[18px]
+                                h-[6px]
+                                w-[6px]
+                                shrink-0
+                                rounded-full
+                                bg-white/60
+                            "
                         />
 
                         <h2
                             className="
-                text-[clamp(3rem,6vw,6.2rem)]
-                font-medium
-                leading-[0.9]
-                tracking-[-0.07em]
-                text-[#8f5d32]
-            "
+                                text-[clamp(3rem,6vw,6.2rem)]
+                                font-medium
+                                leading-[0.9]
+                                tracking-[-0.07em]
+                                text-white/70
+                            "
                         >
                             Frequently
                             <br />
@@ -125,23 +137,23 @@ const AboutFAQ = () => {
                     </div>
 
 
-                    {/* RIGHT — QUESTIONS */}
+                    {/* RIGHT */}
 
                     <div className="faq-heading">
 
                         <h2
                             className="
-                text-[clamp(3rem,6vw,6.2rem)]
-                font-medium
-                leading-[0.9]
-                tracking-[-0.07em]
-                text-[#211812]
-            "
+                                text-[clamp(3rem,6vw,6.2rem)]
+                                font-medium
+                                leading-[0.9]
+                                tracking-[-0.07em]
+                                text-white
+                            "
                         >
                             Questions,
                             <br />
 
-                            <span className="text-[#211812]/30">
+                            <span className="text-white/25">
                                 answered clearly.
                             </span>
 
@@ -151,75 +163,185 @@ const AboutFAQ = () => {
 
                 </div>
 
+
                 {/* FAQ */}
-                <div className="faq-list border-t border-[#211812]/15">
+
+                <div className="faq-list border-t border-white/[0.10]">
+
                     {faqs.map((faq, index) => {
                         const isOpen = openIndex === index;
 
                         return (
                             <div
                                 key={index}
-                                className="faq-item border-b border-[#211812]/15"
+                                className="
+                                    faq-item
+                                    border-b
+                                    border-white/[0.10]
+                                "
                             >
+
                                 <button
                                     type="button"
                                     onClick={() => toggleFAQ(index)}
-                                    className="flex w-full items-center justify-between gap-8 py-7 text-left sm:py-8"
+                                    className="
+                                        flex
+                                        w-full
+                                        items-center
+                                        justify-between
+                                        gap-8
+                                        py-7
+                                        text-left
+                                        sm:py-8
+                                    "
                                     aria-expanded={isOpen}
                                 >
+
                                     <div className="flex items-start gap-6 sm:gap-10">
-                                        <span className="pt-1 font-mono text-[9px] tracking-[0.2em] text-[#ad6d36]">
+
+                                        <span
+                                            className="
+                                                pt-1
+                                                font-mono
+                                                text-[9px]
+                                                tracking-[0.2em]
+                                                text-white/35
+                                            "
+                                        >
                                             0{index + 1}
                                         </span>
 
-                                        <span className="text-[18px] font-medium tracking-[-0.035em] sm:text-[21px]">
+                                        <span
+                                            className="
+                                                text-[18px]
+                                                font-medium
+                                                tracking-[-0.035em]
+                                                text-white
+                                                sm:text-[21px]
+                                            "
+                                        >
                                             {faq.question}
                                         </span>
+
                                     </div>
 
+
+                                    {/* PLUS BUTTON */}
+
                                     <span
-                                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#211812]/15 text-[18px] font-light transition-all duration-300 ${isOpen
-                                            ? "rotate-45 bg-[#211812] text-[#f3eadb]"
-                                            : "text-[#211812]/50"
-                                            }`}
+                                        className={`
+                                            flex
+                                            h-8
+                                            w-8
+                                            shrink-0
+                                            items-center
+                                            justify-center
+                                            rounded-full
+                                            border
+                                            border-white/[0.15]
+                                            text-[18px]
+                                            font-light
+                                            transition-all
+                                            duration-300
+                                            ${
+                                                isOpen
+                                                    ? "rotate-45 bg-white text-black"
+                                                    : "text-white/40"
+                                            }
+                                        `}
                                     >
                                         +
                                     </span>
+
                                 </button>
 
+
+                                {/* ANSWER */}
+
                                 <div
-                                    className={`grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(.22,1,.36,1)] ${isOpen
-                                        ? "grid-rows-[1fr]"
-                                        : "grid-rows-[0fr]"
-                                        }`}
+                                    className={`
+                                        grid
+                                        transition-[grid-template-rows]
+                                        duration-500
+                                        ease-[cubic-bezier(.22,1,.36,1)]
+                                        ${
+                                            isOpen
+                                                ? "grid-rows-[1fr]"
+                                                : "grid-rows-[0fr]"
+                                        }
+                                    `}
                                 >
+
                                     <div className="overflow-hidden">
+
                                         <div className="pb-8 pl-[45px] sm:pl-[72px]">
-                                            <p className="max-w-[650px] text-[13px] leading-7 text-[#211812]/50">
+
+                                            <p
+                                                className="
+                                                    max-w-[650px]
+                                                    text-[13px]
+                                                    leading-7
+                                                    text-white/40
+                                                "
+                                            >
                                                 {faq.answer}
                                             </p>
+
                                         </div>
+
                                     </div>
+
                                 </div>
+
                             </div>
                         );
                     })}
+
                 </div>
 
-                {/* Bottom note */}
+
+                {/* BOTTOM NOTE */}
+
                 <div className="mt-10 flex items-center justify-between">
-                    <p className="text-[11px] text-[#211812]/35">
+
+                    <p className="text-[11px] text-white/25">
                         Still curious? Start exploring CodeLens.
                     </p>
 
-                    <span className="hidden font-mono text-[8px] tracking-[0.25em] text-[#211812]/25 sm:block">
+                    <span
+                        className="
+                            hidden
+                            font-mono
+                            text-[8px]
+                            tracking-[0.25em]
+                            text-white/20
+                            sm:block
+                        "
+                    >
                         CODE INTELLIGENCE
                     </span>
+
                 </div>
+
             </div>
 
-            {/* Decorative glow */}
-            <div className="pointer-events-none absolute left-[-15%] top-[20%] h-[400px] w-[400px] rounded-full bg-[#ad6d36]/[0.035] blur-[120px]" />
+
+            {/* DECORATIVE GLOW */}
+
+            <div
+                className="
+                    pointer-events-none
+                    absolute
+                    left-[-15%]
+                    top-[20%]
+                    h-[400px]
+                    w-[400px]
+                    rounded-full
+                    bg-white/[0.012]
+                    blur-[120px]
+                "
+            />
+
         </section>
     );
 };

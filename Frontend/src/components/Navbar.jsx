@@ -655,21 +655,7 @@ const Navbar = () => {
               What it reads
             </a>
 
-            <a
-              href="#process"
-              className="
-                text-[14px]
-                font-medium
-                tracking-[-0.02em]
-                !text-[#eeeae1]
-                no-underline
-                transition-opacity
-                duration-300
-                hover:opacity-60
-              "
-            >
-              Process
-            </a>
+            
 
             <Link
               to="/about"
@@ -685,6 +671,21 @@ const Navbar = () => {
               "
             >
               About
+            </Link>
+            <Link
+            to="/contact"
+              className="
+                text-[14px]
+                font-medium
+                tracking-[-0.02em]
+                !text-[#eeeae1]
+                no-underline
+                transition-opacity
+                duration-300
+                hover:opacity-60
+              "
+            >
+              Contact
             </Link>
           </nav>
 
@@ -1109,7 +1110,7 @@ const Navbar = () => {
           fixed
           inset-0
           z-[1050]
-          bg-black/60
+          bg-[#121213]/60
           opacity-0
           pointer-events-none
         "
@@ -1244,32 +1245,7 @@ const Navbar = () => {
             What it reads
           </a>
 
-          {/* PROCESS */}
-
-          <a
-            ref={(el) => {
-              menuItemsRef.current[1] = el;
-            }}
-            href="#process"
-            onClick={() =>
-              setMenuOpen(false)
-            }
-            className="
-              border-b
-              border-[#eeeae1]/20
-              py-5
-              text-[32px]
-              font-medium
-              tracking-[-0.05em]
-              !text-[#eeeae1]
-              no-underline
-              transition-all
-              duration-300
-              hover:pl-2
-            "
-          >
-            Process
-          </a>
+          
 
           {/* ABOUT */}
 
@@ -1296,6 +1272,33 @@ const Navbar = () => {
             "
           >
             About
+          </Link>
+
+          {/* CONTACT */}
+
+          <Link
+            ref={(el) => {
+              menuItemsRef.current[1] = el;
+            }}
+            to="/contact"
+            onClick={() =>
+              setMenuOpen(false)
+            }
+            className="
+              border-b
+              border-[#eeeae1]/20
+              py-5
+              text-[32px]
+              font-medium
+              tracking-[-0.05em]
+              !text-[#eeeae1]
+              no-underline
+              transition-all
+              duration-300
+              hover:pl-2
+            "
+          >
+            Contact
           </Link>
 
           {/* REVIEW A REPO */}

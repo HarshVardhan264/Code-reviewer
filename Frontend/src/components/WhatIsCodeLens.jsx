@@ -85,10 +85,84 @@ const WhatIsCodeLens = () => {
         >
             <div className="cl-shell cl-rail">
 
+                {/* CodeLens Lens */}
                 <div className="cl-rail__label">
-                    <p className="cl-mono">(the gap)</p>
+                    <svg
+                        width="230"
+                        height="230"
+                        viewBox="0 0 230 230"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                    >
+                        {/* Outer technical circle */}
+                        <circle
+                            cx="105"
+                            cy="105"
+                            r="82"
+                            stroke="rgba(255,255,255,0.10)"
+                            strokeWidth="1"
+                        />
+
+                        {/* Lens glass */}
+                        <circle
+                            cx="105"
+                            cy="105"
+                            r="48"
+                            stroke="rgba(255,255,255,0.92)"
+                            strokeWidth="4"
+                        />
+
+                        {/* Inner glass detail */}
+                        <circle
+                            cx="105"
+                            cy="105"
+                            r="39"
+                            stroke="rgba(255,255,255,0.08)"
+                            strokeWidth="1"
+                        />
+
+                        {/* Lens reflection */}
+                        <path
+                            d="M78 83C84 75 92 70 101 68"
+                            stroke="rgba(255,255,255,0.35)"
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                        />
+
+                        {/* Magnifying glass handle */}
+                        <path
+                            d="M139 139L178 178"
+                            stroke="rgba(255,255,255,0.92)"
+                            strokeWidth="12"
+                            strokeLinecap="round"
+                        />
+
+                        {/* Handle highlight */}
+                        <path
+                            d="M140 140L177 177"
+                            stroke="rgba(255,255,255,0.18)"
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                        />
+
+                        {/* Horizontal crosshair */}
+                        <path
+                            d="M23 105H187"
+                            stroke="rgba(255,255,255,0.05)"
+                            strokeWidth="1"
+                        />
+
+                        {/* Vertical crosshair */}
+                        <path
+                            d="M105 23V187"
+                            stroke="rgba(255,255,255,0.05)"
+                            strokeWidth="1"
+                        />
+                    </svg>
                 </div>
 
+                {/* Existing Content — unchanged */}
                 <div>
 
                     <p className="cl-statement">

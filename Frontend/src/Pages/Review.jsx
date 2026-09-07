@@ -1342,7 +1342,7 @@ const Review = () => {
                         className="
               absolute
               inset-0
-              bg-black/65
+              bg-[#121213]/65
               backdrop-blur-sm
               cursor-default
             "
@@ -1502,7 +1502,7 @@ const Review = () => {
                         className="
               absolute
               inset-0
-              bg-black/65
+              bg-[#121213]/65
               backdrop-blur-sm
               cursor-default
             "

@@ -67,7 +67,7 @@ const AboutCTA = () => {
     return (
         <section
             ref={sectionRef}
-            className="relative overflow-hidden bg-[#080604] text-[#f4ead7]"
+            className="relative overflow-hidden bg-[#121213] text-white"
         >
             {/* =====================================================
                 CTA HERO
@@ -85,56 +85,103 @@ const AboutCTA = () => {
                 </div>
 
                 {/* Dark overlay */}
-                <div className="absolute inset-0 bg-[#080604]/70" />
+                <div className="absolute inset-0 bg-[#121213]/70" />
 
-                {/* Brown overlay */}
-                <div className="absolute inset-0 bg-[#3b2415]/25 mix-blend-multiply" />
+                {/* Neutral dark overlay */}
+                <div className="absolute inset-0 bg-[#121213]/20 mix-blend-multiply" />
 
                 {/* Top fade */}
-                <div className="absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-[#080604] to-transparent" />
+                <div
+                    className="
+                        absolute
+                        inset-x-0
+                        top-0
+                        h-[40%]
+                        bg-gradient-to-b
+                        from-[#121213]
+                        to-transparent
+                    "
+                />
 
                 {/* Bottom fade */}
-                <div className="absolute inset-x-0 bottom-0 h-[70%] bg-gradient-to-t from-[#080604] via-[#080604]/75 to-transparent" />
+                <div
+                    className="
+                        absolute
+                        inset-x-0
+                        bottom-0
+                        h-[70%]
+                        bg-gradient-to-t
+                        from-[#121213]
+                        via-[#121213]/75
+                        to-transparent
+                    "
+                />
 
                 {/* Side vignette */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#080604]/75 via-transparent to-[#080604]/55" />
+                <div
+                    className="
+                        absolute
+                        inset-0
+                        bg-gradient-to-r
+                        from-black/75
+                        via-transparent
+                        to-black/55
+                    "
+                />
 
-                {/* Warm glow */}
-                <div className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#b86f32]/[0.08] blur-[180px]" />
+                {/* Subtle white glow */}
+                <div
+                    className="
+                        pointer-events-none
+                        absolute
+                        left-1/2
+                        top-1/2
+                        h-[600px]
+                        w-[900px]
+                        -translate-x-1/2
+                        -translate-y-1/2
+                        rounded-full
+                        bg-white/[0.025]
+                        blur-[180px]
+                    "
+                />
 
                 {/* Content */}
-                <div className="relative mx-auto flex min-h-[72vh] max-w-[1500px] flex-col justify-between px-[7vw] py-10 sm:py-14">
-
-                    {/* TOP BAR */}
-                    <div className="about-cta-top flex items-center justify-between">
-
-                        <Link
-                            to="/"
-                            className="text-[20px] font-medium tracking-[-0.05em]"
-                        >
-                            CodeLens<span className="text-[#c98a4b]">.</span>
-                        </Link>
-
-                        <div className="flex items-center gap-3">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#c98a4b]" />
-
-                            <span className="font-mono text-[9px] tracking-[0.22em] text-[#f4ead7]/40">
-                                READY TO REVIEW
-                            </span>
-                        </div>
-
-                    </div>
+                <div
+                    className="
+                        relative
+                        mx-auto
+                        flex
+                        min-h-[72vh]
+                        max-w-[1500px]
+                        flex-col
+                        justify-between
+                        px-[7vw]
+                        py-10
+                        sm:py-14
+                    "
+                >
+                    
 
 
-                    {/* MAIN CONTENT */}
+                    {/* =================================================
+                        MAIN CONTENT
+                    ================================================= */}
+
                     <div className="pb-8 pt-28 sm:pb-12 sm:pt-32">
 
                         {/* Label */}
                         <div className="about-cta-label mb-7 flex items-center gap-4">
 
-                            <span className="h-px w-9 bg-[#c98a4b]" />
+                            <span className="h-px w-9 bg-white/50" />
 
-                            <span className="font-mono text-[10px] tracking-[0.3em] text-[#c98a4b]">
+                            <span
+                                className="
+                                    text-[10px]
+                                    tracking-[0.3em]
+                                    text-white/55
+                                "
+                            >
                                 CODELENS
                             </span>
 
@@ -145,13 +192,14 @@ const AboutCTA = () => {
                         <div className="overflow-hidden pb-[0.15em]">
                             <h2
                                 className="
-            about-cta-title-line
-            max-w-[1000px]
-            text-[clamp(4rem,9vw,9.5rem)]
-            font-medium
-            leading-[0.95]
-            tracking-[-0.075em]
-        "
+                                    about-cta-title-line
+                                    max-w-[1000px]
+                                    text-[clamp(4rem,9vw,9.5rem)]
+                                    font-medium
+                                    leading-[0.95]
+                                    tracking-[-0.075em]
+                                    text-white
+                                "
                             >
                                 See your code
                             </h2>
@@ -160,14 +208,14 @@ const AboutCTA = () => {
                         <div className="overflow-hidden pb-[0.15em]">
                             <h2
                                 className="
-            about-cta-title-line
-            max-w-[1000px]
-            text-[clamp(4rem,9vw,9.5rem)]
-            font-medium
-            leading-[0.95]
-            tracking-[-0.075em]
-            text-[#f4ead7]/40
-        "
+                                    about-cta-title-line
+                                    max-w-[1000px]
+                                    text-[clamp(4rem,9vw,9.5rem)]
+                                    font-medium
+                                    leading-[0.95]
+                                    tracking-[-0.075em]
+                                    text-white/30
+                                "
                             >
                                 differently.
                             </h2>
@@ -175,7 +223,16 @@ const AboutCTA = () => {
 
 
                         {/* Description */}
-                        <p className="about-cta-bottom mt-8 max-w-[450px] text-[14px] leading-[1.8] text-[#f4ead7]/50">
+                        <p
+                            className="
+                                about-cta-bottom
+                                mt-8
+                                max-w-[450px]
+                                text-[17px]
+                                leading-[1.8]
+                                text-white/55
+                            "
+                        >
                             Give your code a second pair of eyes.
                             CodeLens helps you understand what's wrong,
                             why it matters, and where to improve.
@@ -193,24 +250,32 @@ const AboutCTA = () => {
                                     items-center
                                     gap-4
                                     rounded-[14px]
-                                    bg-[#f4ead7]
+                                    bg-white
                                     px-7
                                     py-4
-                                    text-[13px]
+                                    
                                     font-semibold
-                                    text-[#17110c]
+                                    text-[#000000]
                                     transition-all
                                     duration-300
                                     hover:-translate-y-1
-                                    hover:bg-white
-                                    hover:shadow-[0_20px_50px_rgba(201,138,75,0.2)]
+                                    hover:bg-white/90
+                                    hover:shadow-[0_20px_60px_rgba(255,255,255,0.08)]
                                 "
                             >
-                                <span>
+                                <span className="text-black ">
                                     Start a review
                                 </span>
 
-                                <span className="text-[17px] transition-transform duration-300 group-hover:translate-x-1">
+                                <span
+                                    className="
+                                        text-[17px]
+                                        text-black
+                                        transition-transform
+                                        duration-300
+                                        group-hover:translate-x-1
+                                    "
+                                >
                                     →
                                 </span>
 
@@ -230,13 +295,27 @@ const AboutCTA = () => {
 
             <div className="relative mx-auto max-w-[1500px] px-[7vw]">
 
-                <div className="flex flex-col gap-3 py-6 text-[9px] text-[#f4ead7]/20 sm:flex-row sm:items-center sm:justify-between">
+                <div
+                    className="
+                        flex
+                        flex-col
+                        gap-3
+                        border-t
+                        border-white/[0.08]
+                        py-6
+                        text-[9px]
+                        text-white/25
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                    "
+                >
 
                     <span>
                         CodeLens · AI Code Intelligence
                     </span>
 
-                    <span className="font-mono tracking-[0.18em]">
+                    <span className="tracking-[0.18em]">
                         UNDERSTAND · REVIEW · IMPROVE
                     </span>
 

@@ -3,7 +3,6 @@ import React from "react";
 import NavbarAbout from "../components/about/NavbarAbout";
 import AboutHero from "../components/about/AboutHero";
 import AboutIntro from "../components/about/AboutIntro";
-import AboutReviewAreas from "../components/about/AboutReviewAreas";
 import AboutHowItWorks from "../components/about/AboutHowItWorks";
 import AboutCharacter from "../components/about/AboutCharacter";
 import AboutFAQ from "../components/about/AboutFAQ";
@@ -16,14 +15,15 @@ const About = () => {
             <NavbarAbout />
 
             <AboutHero />
+            <AboutCharacter />
 
             <AboutIntro />
 
-            <AboutReviewAreas />
+           
 
             <AboutHowItWorks />
 
-            <AboutCharacter />
+            
 
             <AboutFAQ />
 
