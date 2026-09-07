@@ -447,20 +447,16 @@ export default function Login() {
       // SAVE AUTH DATA
       // ==========================================
 
+      // JWT token
       localStorage.setItem(
         "codelens_token",
         token
       );
 
+      // User information
       localStorage.setItem(
         "codelens_user",
         JSON.stringify(user)
-      );
-
-      // Navbar uses this
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
       );
 
       // ==========================================

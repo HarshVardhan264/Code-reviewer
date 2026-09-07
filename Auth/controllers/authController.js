@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const RevokedToken = require("../models/RevokedToken");
+
 
 const generateToken = (userId) => {
     return jwt.sign(
@@ -185,8 +187,43 @@ const getMe = async (req, res) => {
     }
 };
 
+const logout = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(400).json({
+        success: false,
+        message: "Authentication token missing",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    await RevokedToken.create({
+      token,
+      expiresAt: new Date(decoded.exp * 1000),
+    });
+
+    return res.json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout error:", error.message);
+
+    return res.status(400).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
+  }
+};
+
 module.exports = {
-    signup,
-    login,
-    getMe,
+  signup,
+  login,
+  getMe,
+  logout,
 };

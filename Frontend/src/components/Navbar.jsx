@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { Link } from "react-router-dom";
+import axios from "axios";
 import gsap from "gsap";
 
 /* =========================================================
@@ -89,6 +90,66 @@ const ProfileIcon = () => (
 );
 
 /* =========================================================
+   PLUS ICON
+========================================================= */
+
+const PlusIcon = ({ size = 16 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+  >
+    <path d="M12 5v14" />
+    <path d="M5 12h14" />
+  </svg>
+);
+
+/* =========================================================
+   LOGOUT ICON
+========================================================= */
+
+const LogoutIcon = ({ size = 16 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4" />
+    <path d="M15 16l4-4-4-4" />
+    <path d="M19 12H9" />
+  </svg>
+);
+
+/* =========================================================
+   ARROW UP ICON
+========================================================= */
+
+const ArrowUpIcon = ({ size = 15 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 19V5" />
+    <path d="m6 11 6-6 6 6" />
+  </svg>
+);
+
+/* =========================================================
    NAVBAR
 ========================================================= */
 
@@ -101,6 +162,28 @@ const Navbar = () => {
   ======================================================= */
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+
+  /* =======================================================
+     PROFILE DROPDOWN
+  ======================================================= */
+
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  /* =======================================================
+     REVIEW USAGE
+  ======================================================= */
+
+  const FREE_REVIEW_LIMIT = 4;
+
+  const reviewCount = Number(
+    user?.reviewsUsed || 0
+  );
+
+  const remaining = Math.max(
+    0,
+    FREE_REVIEW_LIMIT - reviewCount
+  );
 
   /* =======================================================
      GSAP REFS
@@ -114,14 +197,94 @@ const Navbar = () => {
   const menuItemsRef = useRef([]);
 
   /* =======================================================
-     CHECK LOGIN
+     CHECK AUTHENTICATION
   ======================================================= */
 
   useEffect(() => {
-    const loggedIn =
-      localStorage.getItem("isLoggedIn");
+    let mounted = true;
 
-    setIsLoggedIn(loggedIn === "true");
+    const checkAuthentication = async () => {
+      const token =
+        localStorage.getItem("codelens_token");
+
+      if (!token) {
+        if (mounted) {
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/auth/me",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (
+          response.data?.success &&
+          response.data?.user
+        ) {
+          const currentUser =
+            response.data.user;
+
+          if (!mounted) return;
+
+          setIsLoggedIn(true);
+          setUser(currentUser);
+
+          /*
+            Keep the latest backend user
+            information locally.
+          */
+
+          localStorage.setItem(
+            "codelens_user",
+            JSON.stringify(currentUser)
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Authentication check failed:",
+          error.response?.data ||
+            error.message
+        );
+
+        /*
+          JWT is invalid/expired.
+          Remove the local session.
+        */
+
+        if (
+          error.response?.status === 401 ||
+          error.response?.status === 403
+        ) {
+          localStorage.removeItem(
+            "codelens_token"
+          );
+
+          localStorage.removeItem(
+            "codelens_user"
+          );
+
+          if (mounted) {
+            setIsLoggedIn(false);
+            setUser(null);
+          }
+        }
+      }
+    };
+
+    checkAuthentication();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   /* =======================================================
@@ -160,7 +323,8 @@ const Navbar = () => {
 
   useEffect(() => {
     if (menuOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow =
+        "hidden";
     } else {
       document.body.style.overflow = "";
     }
@@ -215,9 +379,8 @@ const Navbar = () => {
 
     if (!menu || !overlay) return;
 
-    const items = menuItemsRef.current.filter(
-      Boolean
-    );
+    const items =
+      menuItemsRef.current.filter(Boolean);
 
     gsap.killTweensOf([
       menu,
@@ -234,8 +397,6 @@ const Navbar = () => {
     if (menuOpen) {
       const tl = gsap.timeline();
 
-      /* Overlay */
-
       tl.to(
         overlay,
         {
@@ -250,8 +411,6 @@ const Navbar = () => {
         0
       );
 
-      /* Panel */
-
       tl.to(
         menu,
         {
@@ -261,8 +420,6 @@ const Navbar = () => {
         },
         0
       );
-
-      /* Header */
 
       tl.to(
         menuHeaderRef.current,
@@ -275,8 +432,6 @@ const Navbar = () => {
         0.35
       );
 
-      /* Menu items */
-
       tl.to(
         items,
         {
@@ -288,8 +443,6 @@ const Navbar = () => {
         },
         0.4
       );
-
-      /* Footer */
 
       tl.to(
         menuFooterRef.current,
@@ -310,8 +463,6 @@ const Navbar = () => {
     else {
       const tl = gsap.timeline();
 
-      /* Menu items */
-
       tl.to(
         items,
         {
@@ -324,8 +475,6 @@ const Navbar = () => {
         0
       );
 
-      /* Header */
-
       tl.to(
         menuHeaderRef.current,
         {
@@ -336,8 +485,6 @@ const Navbar = () => {
         },
         0
       );
-
-      /* Footer */
 
       tl.to(
         menuFooterRef.current,
@@ -350,8 +497,6 @@ const Navbar = () => {
         0
       );
 
-      /* Panel → right */
-
       tl.to(
         menu,
         {
@@ -362,15 +507,12 @@ const Navbar = () => {
         0.08
       );
 
-      /* Overlay */
-
       tl.to(
         overlay,
         {
           opacity: 0,
           duration: 0.4,
           ease: "power2.inOut",
-
           onComplete: () => {
             overlay.style.pointerEvents =
               "none";
@@ -380,6 +522,69 @@ const Navbar = () => {
       );
     }
   }, [menuOpen]);
+
+  /* =======================================================
+     PROFILE ACTIONS
+  ======================================================= */
+
+  const handleTryForFree = () => {
+    setProfileOpen(false);
+
+    /*
+      Pro users should always be allowed
+      to continue reviewing.
+    */
+
+    if (
+      user?.plan === "free" &&
+      reviewCount >= FREE_REVIEW_LIMIT
+    ) {
+      window.dispatchEvent(
+        new CustomEvent(
+          "codelens:upgrade"
+        )
+      );
+
+      return;
+    }
+
+    /*
+      User still has free reviews.
+    */
+
+    window.location.href = "/review";
+  };
+
+  /* =======================================================
+     LOGOUT
+  ======================================================= */
+
+  const handleLogout = () => {
+    setProfileOpen(false);
+
+    /*
+      Current backend uses stateless JWT.
+      There is no /logout endpoint yet,
+      so simply remove the local JWT.
+    */
+
+    localStorage.removeItem(
+      "codelens_token"
+    );
+
+    localStorage.removeItem(
+      "codelens_user"
+    );
+
+    /*
+      No isLoggedIn localStorage flag anymore.
+    */
+
+    setIsLoggedIn(false);
+    setUser(null);
+
+    window.location.href = "/login";
+  };
 
   /* =======================================================
      TOP NAV VISIBILITY
@@ -556,34 +761,254 @@ const Navbar = () => {
                  PROFILE
               ================================================= */
 
-              <Link
-                to="/profile"
-                aria-label="Open profile"
+              <div
                 className={`
-                  flex
-                  h-[46px]
-                  items-center
-                  gap-2
-                  border
-                  border-[#eeeae1]/30
-                  px-[15px]
-                  text-[14px]
-                  font-medium
-                  !text-[#eeeae1]
-                  no-underline
+                  relative
                   transition-all
-                  duration-300
-                  hover:bg-[#eeeae1]
-                  hover:!text-[#0b0b0a]
+                  duration-500
                   ${topVisibility}
                 `}
               >
-                <ProfileIcon />
+                {/* PROFILE BUTTON */}
 
-                <span className="!text-inherit">
-                  Profile
-                </span>
-              </Link>
+                <button
+                  type="button"
+                  aria-label="Open profile"
+                  aria-expanded={
+                    profileOpen
+                  }
+                  onClick={() =>
+                    setProfileOpen(
+                      (prev) => !prev
+                    )
+                  }
+                  className="
+                    flex
+                    h-[46px]
+                    items-center
+                    gap-2
+                    border
+                    border-[#eeeae1]/30
+                    px-[15px]
+                    text-[14px]
+                    font-medium
+                    !text-[#eeeae1]
+                    transition-all
+                    duration-300
+                    hover:bg-[#eeeae1]
+                    hover:!text-[#0b0b0a]
+                  "
+                >
+                  <ProfileIcon />
+
+                  <span className="!text-inherit">
+                    Profile
+                  </span>
+                </button>
+
+                {/* =================================================
+                    PROFILE DROPDOWN
+                ================================================= */}
+
+                {profileOpen && (
+                  <div
+                    className="
+                      absolute
+                      right-0
+                      top-[54px]
+                      z-[1200]
+                      w-[245px]
+                      overflow-hidden
+                      rounded-2xl
+                      border
+                      border-white/[0.09]
+                      bg-[#151314]
+                      shadow-2xl
+                    "
+                  >
+                    {/* USER INFO */}
+
+                    <div
+                      className="
+                        border-b
+                        border-white/[0.07]
+                        px-4
+                        py-3
+                      "
+                    >
+                      <div className="truncate text-[12px] text-white/80">
+                        {user?.name ||
+                          "CodeLens User"}
+                      </div>
+
+                      <div className="mt-1 truncate text-[10px] text-white/30">
+                        {user?.email || ""}
+                      </div>
+                    </div>
+
+                    {/* TRY FOR FREE */}
+
+                    <button
+                      type="button"
+                      onClick={
+                        handleTryForFree
+                      }
+                      className="
+                        flex
+                        w-full
+                        items-center
+                        gap-3
+                        px-4
+                        py-3
+                        text-left
+                        transition-all
+                        hover:bg-white/[0.045]
+                      "
+                    >
+                      <div
+                        className="
+                          flex
+                          h-8
+                          w-8
+                          items-center
+                          justify-center
+                          rounded-lg
+                          border
+                          border-white/[0.08]
+                          bg-white/[0.025]
+                          text-white/65
+                        "
+                      >
+                        <PlusIcon size={16} />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[12px] text-white/75">
+                          Try for Free
+                        </div>
+
+                        <div className="mt-1 text-[10px] text-white/30">
+                          {remaining > 0
+                            ? `${remaining} free review${
+                                remaining ===
+                                1
+                                  ? ""
+                                  : "s"
+                              } remaining`
+                            : "Free limit reached"}
+                        </div>
+                      </div>
+                    </button>
+
+                    {/* UPGRADE */}
+
+                    {user?.plan ===
+                      "free" &&
+                      remaining === 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProfileOpen(
+                              false
+                            );
+
+                            window.dispatchEvent(
+                              new CustomEvent(
+                                "codelens:upgrade"
+                              )
+                            );
+                          }}
+                          className="
+                            flex
+                            w-full
+                            items-center
+                            gap-3
+                            border-t
+                            border-white/[0.06]
+                            px-4
+                            py-3
+                            text-left
+                            transition-all
+                            hover:bg-white/[0.045]
+                          "
+                        >
+                          <div
+                            className="
+                              flex
+                              h-8
+                              w-8
+                              items-center
+                              justify-center
+                              rounded-lg
+                              bg-white
+                              text-[#080b09]
+                            "
+                          >
+                            <ArrowUpIcon
+                              size={15}
+                            />
+                          </div>
+
+                          <div>
+                            <div className="text-[12px] text-white/80">
+                              Upgrade to Pro
+                            </div>
+
+                            <div className="mt-1 text-[10px] text-white/30">
+                              Continue reviewing for
+                              $20
+                            </div>
+                          </div>
+                        </button>
+                      )}
+
+                    {/* LOG OUT */}
+
+                    <button
+                      type="button"
+                      onClick={
+                        handleLogout
+                      }
+                      className="
+                        flex
+                        w-full
+                        items-center
+                        gap-3
+                        border-t
+                        border-white/[0.06]
+                        px-4
+                        py-3
+                        text-left
+                        text-red-400/70
+                        transition-all
+                        hover:bg-red-400/[0.05]
+                        hover:text-red-400
+                      "
+                    >
+                      <div
+                        className="
+                          flex
+                          h-8
+                          w-8
+                          items-center
+                          justify-center
+                          rounded-lg
+                          border
+                          border-red-400/[0.10]
+                        "
+                      >
+                        <LogoutIcon
+                          size={15}
+                        />
+                      </div>
+
+                      <span className="text-[12px]">
+                        Log out
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* =================================================
@@ -639,7 +1064,9 @@ const Navbar = () => {
               type="button"
               aria-label="Open menu"
               aria-expanded={menuOpen}
-              onClick={() => setMenuOpen(true)}
+              onClick={() =>
+                setMenuOpen(true)
+              }
               className={`
                 flex
                 h-[58px]
@@ -674,7 +1101,10 @@ const Navbar = () => {
 
       <div
         ref={overlayRef}
-        onClick={() => setMenuOpen(false)}
+        onClick={() => {
+          setMenuOpen(false);
+          setProfileOpen(false);
+        }}
         className="
           fixed
           inset-0
@@ -701,7 +1131,7 @@ const Navbar = () => {
           w-[420px]
           max-w-[88vw]
           flex-col
-          bg-[#0b0b0a]
+          bg-[#151314]
           px-8
           py-8
           text-[#eeeae1]
@@ -724,19 +1154,10 @@ const Navbar = () => {
 
           <Link
             to="/"
-            onClick={() => setMenuOpen(false)}
-            className="
-              flex
-              items-center
-              text-[20px]
-              font-medium
-              tracking-[-0.05em]
-              !text-[#eeeae1]
-              no-underline
-            "
+            className="cl-nav__mark"
+            aria-label="CodeLens home"
           >
             C<Lens />
-
             <span>delens</span>
           </Link>
 
@@ -745,7 +1166,9 @@ const Navbar = () => {
           <button
             type="button"
             aria-label="Close menu"
-            onClick={() => setMenuOpen(false)}
+            onClick={() =>
+              setMenuOpen(false)
+            }
             className="
               relative
               z-[1200]
@@ -801,7 +1224,9 @@ const Navbar = () => {
               menuItemsRef.current[0] = el;
             }}
             href="#reads"
-            onClick={() => setMenuOpen(false)}
+            onClick={() =>
+              setMenuOpen(false)
+            }
             className="
               border-b
               border-[#eeeae1]/20
@@ -826,7 +1251,9 @@ const Navbar = () => {
               menuItemsRef.current[1] = el;
             }}
             href="#process"
-            onClick={() => setMenuOpen(false)}
+            onClick={() =>
+              setMenuOpen(false)
+            }
             className="
               border-b
               border-[#eeeae1]/20
@@ -851,7 +1278,9 @@ const Navbar = () => {
               menuItemsRef.current[2] = el;
             }}
             to="/about"
-            onClick={() => setMenuOpen(false)}
+            onClick={() =>
+              setMenuOpen(false)
+            }
             className="
               border-b
               border-[#eeeae1]/20
@@ -876,7 +1305,9 @@ const Navbar = () => {
               menuItemsRef.current[3] = el;
             }}
             to="/review"
-            onClick={() => setMenuOpen(false)}
+            onClick={() =>
+              setMenuOpen(false)
+            }
             className="
               flex
               items-center
@@ -914,7 +1345,9 @@ const Navbar = () => {
                   menuItemsRef.current[4] = el;
                 }}
                 to="/login"
-                onClick={() => setMenuOpen(false)}
+                onClick={() =>
+                  setMenuOpen(false)
+                }
                 className="
                   border-b
                   border-[#eeeae1]/20
@@ -941,7 +1374,9 @@ const Navbar = () => {
                   menuItemsRef.current[5] = el;
                 }}
                 to="/signup"
-                onClick={() => setMenuOpen(false)}
+                onClick={() =>
+                  setMenuOpen(false)
+                }
                 className="
                   border-b
                   border-[#eeeae1]/20
@@ -964,31 +1399,187 @@ const Navbar = () => {
           ) : (
             /* PROFILE */
 
-            <Link
+            <button
               ref={(el) => {
                 menuItemsRef.current[4] = el;
               }}
-              to="/profile"
-              onClick={() => setMenuOpen(false)}
+              type="button"
+              onClick={() =>
+                setProfileOpen(
+                  (prev) => !prev
+                )
+              }
               className="
+                w-full
                 border-b
                 border-[#eeeae1]/20
                 py-5
+                text-left
                 text-[32px]
                 font-medium
                 tracking-[-0.05em]
                 !text-[#eeeae1]
-                no-underline
                 transition-all
                 duration-300
                 hover:pl-2
               "
             >
-              <span className="!text-[#eeeae1]">
-                Profile
-              </span>
-            </Link>
+              Profile
+            </button>
           )}
+
+          {/* =================================================
+              PROFILE OPTIONS INSIDE MENU
+          ================================================= */}
+
+          {isLoggedIn &&
+            profileOpen && (
+              <div
+                className="
+                  mt-3
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-white/[0.09]
+                  bg-white/[0.025]
+                "
+              >
+                {/* USER */}
+
+                <div
+                  className="
+                    border-b
+                    border-white/[0.07]
+                    px-4
+                    py-4
+                  "
+                >
+                  <div className="text-[13px] text-white/80">
+                    {user?.name ||
+                      "CodeLens User"}
+                  </div>
+
+                  <div className="mt-1 text-[11px] text-white/30">
+                    {user?.email || ""}
+                  </div>
+                </div>
+
+                {/* TRY FOR FREE */}
+
+                <button
+                  type="button"
+                  onClick={
+                    handleTryForFree
+                  }
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    px-4
+                    py-4
+                    text-left
+                    transition-all
+                    hover:bg-white/[0.045]
+                  "
+                >
+                  <PlusIcon size={18} />
+
+                  <div>
+                    <div className="text-[14px] text-white/80">
+                      Try for Free
+                    </div>
+
+                    <div className="mt-1 text-[10px] text-white/30">
+                      {remaining > 0
+                        ? `${remaining} free review${
+                            remaining ===
+                            1
+                              ? ""
+                              : "s"
+                          } remaining`
+                        : "Free limit reached"}
+                    </div>
+                  </div>
+                </button>
+
+                {/* UPGRADE */}
+
+                {user?.plan ===
+                  "free" &&
+                  remaining === 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(
+                          false
+                        );
+
+                        window.dispatchEvent(
+                          new CustomEvent(
+                            "codelens:upgrade"
+                          )
+                        );
+                      }}
+                      className="
+                        flex
+                        w-full
+                        items-center
+                        gap-3
+                        border-t
+                        border-white/[0.06]
+                        px-4
+                        py-4
+                        text-left
+                        transition-all
+                        hover:bg-white/[0.045]
+                      "
+                    >
+                      <ArrowUpIcon size={17} />
+
+                      <div>
+                        <div className="text-[14px] text-white/80">
+                          Upgrade to Pro
+                        </div>
+
+                        <div className="mt-1 text-[10px] text-white/30">
+                          Continue reviewing for $20
+                        </div>
+                      </div>
+                    </button>
+                  )}
+
+                {/* LOGOUT */}
+
+                <button
+                  type="button"
+                  onClick={
+                    handleLogout
+                  }
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    border-t
+                    border-white/[0.06]
+                    px-4
+                    py-4
+                    text-left
+                    text-red-400/70
+                    transition-all
+                    hover:bg-red-400/[0.05]
+                    hover:text-red-400
+                  "
+                >
+                  <LogoutIcon size={17} />
+
+                  <span className="text-[14px]">
+                    Log out
+                  </span>
+                </button>
+              </div>
+            )}
         </nav>
 
         {/* =================================================

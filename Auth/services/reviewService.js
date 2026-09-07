@@ -6,7 +6,7 @@ async function sendCodeForReview(chunks) {
     const response = await axios.post(
         "http://127.0.0.1:8000/review",
         {
-            chunks: chunks
+            chunks: chunks,
         }
     );
 
@@ -15,5 +15,5 @@ async function sendCodeForReview(chunks) {
 
 
 module.exports = {
-    sendCodeForReview
+    sendCodeForReview,
 };

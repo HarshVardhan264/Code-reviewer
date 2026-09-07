@@ -475,21 +475,49 @@ export default function Signup() {
       // SAVE AUTH DATA
       // ==========================================
 
+      if (!token || !user) {
+        throw new Error(
+          "Invalid response from server."
+        );
+      }
+
+      /*
+       * JWT TOKEN
+       *
+       * This is the actual authentication
+       * credential used by the frontend when
+       * calling protected backend routes.
+       */
       localStorage.setItem(
         "codelens_token",
         token
       );
 
+      /*
+       * USER DATA
+       *
+       * This is only cached information used
+       * by the UI.
+       *
+       * The backend remains the source of truth
+       * for plan, reviewsUsed, etc.
+       */
       localStorage.setItem(
         "codelens_user",
         JSON.stringify(user)
       );
 
-      // Navbar uses this
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
-      );
+      /*
+       * IMPORTANT:
+       *
+       * We intentionally DO NOT store:
+       *
+       * localStorage.setItem("isLoggedIn", "true");
+       *
+       * The presence of the JWT is enough for
+       * the frontend to know that authentication
+       * data exists.
+       */
 
       // ==========================================
       // SUCCESS ANIMATION
@@ -513,6 +541,7 @@ export default function Signup() {
 
       const message =
         error.response?.data?.message ||
+        error.message ||
         "Unable to create your account. Please try again.";
 
       setError(message);

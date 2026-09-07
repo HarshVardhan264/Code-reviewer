@@ -1,3 +1,34 @@
+import React from "react";
+import { Link } from "react-router-dom";
+
+
+const Lens = ({ size = "0.78em" }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+        className="inline-block align-[-0.02em]"
+    >
+        <circle
+            cx="12"
+            cy="12"
+            r="10.5"
+            stroke="currentColor"
+            strokeWidth="2.4"
+        />
+        <circle
+            cx="12"
+            cy="12"
+            r="4"
+            stroke="currentColor"
+            strokeWidth="2.4"
+        />
+    </svg>
+);
+
+
 function ReviewResult({ result }) {
     const report = result.report;
 
@@ -167,9 +198,14 @@ function ReviewResult({ result }) {
                         Executive summary
                     </p>
 
-                    <span className="font-mono text-[8px] tracking-[0.15em] text-[#eeeae1]/15">
-                        CODELENS
-                    </span>
+                    <Link
+                        to="/"
+                        className="cl-nav__mark"
+                        aria-label="CodeLens home"
+                    >
+                        C<Lens />
+                        <span>delens</span>
+                    </Link>
 
                 </div>
 

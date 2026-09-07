@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 
@@ -62,6 +68,8 @@ const ChevronIcon = ({ direction = "left", size = 18 }) => {
       ? "rotate(0)"
       : direction === "right"
       ? "rotate(180deg)"
+      : direction === "down"
+      ? "rotate(-90deg)"
       : "rotate(90deg)";
 
   return (
@@ -193,12 +201,14 @@ const Sidebar = ({
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [width, setWidth] = useState(DEFAULT_WIDTH);
-
   const [isDragging, setIsDragging] = useState(false);
 
-  // ----------------------------------------------------------
-  // Initial animation
-  // ----------------------------------------------------------
+  // Profile dropdown
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  // ==========================================================
+  // INITIAL ANIMATION
+  // ==========================================================
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -236,33 +246,40 @@ const Sidebar = ({
     return () => ctx.revert();
   }, []);
 
-  // ----------------------------------------------------------
-  // Inform Review.jsx about width
-  // ----------------------------------------------------------
+  // ==========================================================
+  // INFORM REVIEW.JSX ABOUT WIDTH
+  // ==========================================================
 
   useEffect(() => {
     if (onWidthChange) {
-      onWidthChange(isCollapsed ? COLLAPSED_WIDTH : width);
+      onWidthChange(
+        isCollapsed ? COLLAPSED_WIDTH : width
+      );
     }
   }, [width, isCollapsed, onWidthChange]);
 
-  // ----------------------------------------------------------
-  // Collapse / Expand
-  // ----------------------------------------------------------
+  // ==========================================================
+  // COLLAPSE / EXPAND
+  // ==========================================================
 
   const toggleSidebar = () => {
     const nextState = !isCollapsed;
 
     setIsCollapsed(nextState);
 
+    // Close profile menu when collapsing
+    setProfileOpen(false);
+
     if (onWidthChange) {
-      onWidthChange(nextState ? COLLAPSED_WIDTH : width);
+      onWidthChange(
+        nextState ? COLLAPSED_WIDTH : width
+      );
     }
   };
 
-  // ----------------------------------------------------------
-  // Resize sidebar
-  // ----------------------------------------------------------
+  // ==========================================================
+  // RESIZE SIDEBAR
+  // ==========================================================
 
   const handlePointerDown = (event) => {
     if (isCollapsed) return;
@@ -276,15 +293,23 @@ const Sidebar = ({
       startWidth: width,
     };
 
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener(
+      "pointermove",
+      handlePointerMove
+    );
+
+    window.addEventListener(
+      "pointerup",
+      handlePointerUp
+    );
   };
 
   const handlePointerMove = (event) => {
     if (!resizeRef.current) return;
 
     const delta =
-      event.clientX - resizeRef.current.startX;
+      event.clientX -
+      resizeRef.current.startX;
 
     const nextWidth = Math.min(
       MAX_WIDTH,
@@ -317,9 +342,9 @@ const Sidebar = ({
     );
   };
 
-  // ----------------------------------------------------------
-  // Keyboard resize
-  // ----------------------------------------------------------
+  // ==========================================================
+  // KEYBOARD RESIZE
+  // ==========================================================
 
   const handleResizeKeyDown = (event) => {
     if (isCollapsed) return;
@@ -327,11 +352,17 @@ const Sidebar = ({
     let nextWidth = width;
 
     if (event.key === "ArrowRight") {
-      nextWidth = Math.min(MAX_WIDTH, width + 10);
+      nextWidth = Math.min(
+        MAX_WIDTH,
+        width + 10
+      );
     }
 
     if (event.key === "ArrowLeft") {
-      nextWidth = Math.max(MIN_WIDTH, width - 10);
+      nextWidth = Math.max(
+        MIN_WIDTH,
+        width - 10
+      );
     }
 
     if (nextWidth !== width) {
@@ -345,9 +376,9 @@ const Sidebar = ({
     }
   };
 
-  // ----------------------------------------------------------
-  // Cleanup listeners
-  // ----------------------------------------------------------
+  // ==========================================================
+  // CLEANUP LISTENERS
+  // ==========================================================
 
   useEffect(() => {
     return () => {
@@ -363,29 +394,74 @@ const Sidebar = ({
     };
   }, []);
 
-  // ----------------------------------------------------------
-  // Logout
-  // ----------------------------------------------------------
+  // ==========================================================
+  // LOGOUT
+  // ==========================================================
+
+  // IMPORTANT:
+  // Only the authentication token is stored locally.
+  // User data, plan, review count and history come from
+  // the backend.
 
   const handleLogout = () => {
     localStorage.removeItem("codelens_token");
-    localStorage.removeItem("codelens_user");
-    localStorage.removeItem("isLoggedIn");
 
     window.location.href = "/login";
   };
 
-  // ----------------------------------------------------------
-  // Usage
-  // ----------------------------------------------------------
+  // ==========================================================
+  // TRY FOR FREE
+  // ==========================================================
 
-  const remaining = Math.max(
-    0,
-    freeReviewLimit - reviewCount
-  );
+  const handleTryForFree = () => {
+    setProfileOpen(false);
+
+    /*
+      Free users:
+      0/4 -> go to review
+      4/4 -> show upgrade popup
+
+      Pro users:
+      -> always go to review
+    */
+
+    if (
+      user?.plan === "free" &&
+      reviewCount >= freeReviewLimit
+    ) {
+      onUpgrade?.();
+      return;
+    }
+
+    window.location.href = "/review";
+  };
+
+  // ==========================================================
+  // UPGRADE
+  // ==========================================================
+
+  const handleUpgrade = () => {
+    setProfileOpen(false);
+
+    onUpgrade?.();
+  };
+
+  // ==========================================================
+  // USAGE
+  // ==========================================================
+
+  const isFreeUser =
+    user?.plan === "free";
+
+  const remaining = isFreeUser
+    ? Math.max(
+        0,
+        freeReviewLimit - reviewCount
+      )
+    : null;
 
   const usagePercentage =
-    freeReviewLimit > 0
+    isFreeUser && freeReviewLimit > 0
       ? Math.min(
           100,
           (reviewCount / freeReviewLimit) * 100
@@ -408,7 +484,7 @@ const Sidebar = ({
         hidden
         lg:flex
         flex-col
-        bg-[#080b09]
+        bg-[#151314]
         border-r
         border-white/[0.07]
         text-[#eeeae1]
@@ -416,7 +492,11 @@ const Sidebar = ({
         ${isDragging ? "cursor-col-resize" : ""}
       `}
       style={{
-        width: `${isCollapsed ? COLLAPSED_WIDTH : width}px`,
+        width: `${
+          isCollapsed
+            ? COLLAPSED_WIDTH
+            : width
+        }px`,
       }}
     >
       {/* ======================================================
@@ -436,9 +516,9 @@ const Sidebar = ({
           }
         `}
       >
-        {/* ----------------------------------------------------
+        {/* ====================================================
             EXPANDED LOGO
-        ----------------------------------------------------- */}
+        ===================================================== */}
 
         {!isCollapsed && (
           <Link
@@ -461,9 +541,9 @@ const Sidebar = ({
           </Link>
         )}
 
-        {/* ----------------------------------------------------
+        {/* ====================================================
             COLLAPSED LENS ONLY
-        ----------------------------------------------------- */}
+        ===================================================== */}
 
         {isCollapsed && (
           <button
@@ -484,15 +564,13 @@ const Sidebar = ({
               duration-200
             "
           >
-            <Lens
-              size="23px"
-            />
+            <Lens size="23px" />
           </button>
         )}
 
-        {/* ----------------------------------------------------
+        {/* ====================================================
             COLLAPSE BUTTON
-        ----------------------------------------------------- */}
+        ===================================================== */}
 
         {!isCollapsed && (
           <button
@@ -535,7 +613,9 @@ const Sidebar = ({
             pt-4
           "
         >
-          {/* New Review */}
+          {/* ==================================================
+              NEW REVIEW
+          =================================================== */}
 
           <button
             type="button"
@@ -560,7 +640,9 @@ const Sidebar = ({
             <PlusIcon size={19} />
           </button>
 
-          {/* History */}
+          {/* ==================================================
+              HISTORY
+          =================================================== */}
 
           <button
             type="button"
@@ -588,12 +670,19 @@ const Sidebar = ({
             <HistoryIcon size={18} />
           </button>
 
-          {/* Bottom profile */}
+          {/* ==================================================
+              BOTTOM PROFILE
+          =================================================== */}
 
-          <div className="mt-auto pb-4">
+          <div className="relative mt-auto pb-4">
             <button
               type="button"
               title={user?.name || "Profile"}
+              onClick={() =>
+                setProfileOpen(
+                  (prev) => !prev
+                )
+              }
               className="
                 w-10
                 h-10
@@ -610,6 +699,196 @@ const Sidebar = ({
             >
               <UserIcon size={19} />
             </button>
+
+            {/* ==================================================
+                COLLAPSED PROFILE MENU
+            =================================================== */}
+
+            {profileOpen && (
+              <div
+                className="
+                  absolute
+                  left-[52px]
+                  bottom-0
+                  w-[245px]
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-white/[0.09]
+                  bg-[#151314]
+                  shadow-2xl
+                  z-[100]
+                "
+              >
+                {/* User */}
+
+                <div
+                  className="
+                    px-4
+                    py-3
+                    border-b
+                    border-white/[0.07]
+                  "
+                >
+                  <div className="text-[12px] text-white/80 truncate">
+                    {user?.name ||
+                      "CodeLens User"}
+                  </div>
+
+                  <div className="mt-1 text-[10px] text-white/30 truncate">
+                    {user?.email || ""}
+                  </div>
+                </div>
+
+                {/* ==================================================
+                    TRY FOR FREE
+                =================================================== */}
+
+                <button
+                  type="button"
+                  onClick={handleTryForFree}
+                  className="
+                    w-full
+                    px-4
+                    py-3
+                    flex
+                    items-center
+                    gap-3
+                    text-left
+                    hover:bg-white/[0.045]
+                    transition-all
+                  "
+                >
+                  <div
+                    className="
+                      w-8
+                      h-8
+                      rounded-lg
+                      border
+                      border-white/[0.08]
+                      bg-white/[0.025]
+                      flex
+                      items-center
+                      justify-center
+                      text-white/65
+                    "
+                  >
+                    <PlusIcon size={16} />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12px] text-white/75">
+                      Try for Free
+                    </div>
+
+                    <div className="mt-1 text-[10px] text-white/30">
+                      {!isFreeUser
+                        ? "Continue reviewing"
+                        : remaining > 0
+                        ? `${remaining} free review${
+                            remaining === 1
+                              ? ""
+                              : "s"
+                          } remaining`
+                        : "Free limit reached"}
+                    </div>
+                  </div>
+                </button>
+
+                {/* ==================================================
+                    UPGRADE
+                =================================================== */}
+
+                {isFreeUser &&
+                  remaining === 0 && (
+                    <button
+                      type="button"
+                      onClick={handleUpgrade}
+                      className="
+                        w-full
+                        px-4
+                        py-3
+                        flex
+                        items-center
+                        gap-3
+                        text-left
+                        border-t
+                        border-white/[0.06]
+                        hover:bg-white/[0.045]
+                        transition-all
+                      "
+                    >
+                      <div
+                        className="
+                          w-8
+                          h-8
+                          rounded-lg
+                          bg-white
+                          flex
+                          items-center
+                          justify-center
+                          text-[#151314]
+                        "
+                      >
+                        <ArrowUpIcon size={15} />
+                      </div>
+
+                      <div>
+                        <div className="text-[12px] text-white/80">
+                          Upgrade to Pro
+                        </div>
+
+                        <div className="mt-1 text-[10px] text-white/30">
+                          Continue reviewing for $20
+                        </div>
+                      </div>
+                    </button>
+                  )}
+
+                {/* ==================================================
+                    LOGOUT
+                =================================================== */}
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="
+                    w-full
+                    px-4
+                    py-3
+                    flex
+                    items-center
+                    gap-3
+                    text-left
+                    border-t
+                    border-white/[0.06]
+                    text-red-400/70
+                    hover:bg-red-400/[0.05]
+                    hover:text-red-400
+                    transition-all
+                  "
+                >
+                  <div
+                    className="
+                      w-8
+                      h-8
+                      rounded-lg
+                      border
+                      border-red-400/[0.10]
+                      flex
+                      items-center
+                      justify-center
+                    "
+                  >
+                    <LogoutIcon size={15} />
+                  </div>
+
+                  <span className="text-[12px]">
+                    Log out
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       ) : (
@@ -629,14 +908,15 @@ const Sidebar = ({
               px-3
             "
           >
-            {/* ------------------------------------------------
+            {/* ==================================================
                 NEW REVIEW
-            ------------------------------------------------- */}
+            =================================================== */}
 
             <button
               type="button"
               onClick={() => {
-                window.location.href = "/review";
+                window.location.href =
+                  "/review";
               }}
               className="
                 group
@@ -677,9 +957,9 @@ const Sidebar = ({
               </span>
             </button>
 
-            {/* ------------------------------------------------
+            {/* ==================================================
                 SECTION TITLE
-            ------------------------------------------------- */}
+            =================================================== */}
 
             <div
               className="
@@ -695,9 +975,9 @@ const Sidebar = ({
               Recent reviews
             </div>
 
-            {/* ------------------------------------------------
+            {/* ==================================================
                 HISTORY
-            ------------------------------------------------- */}
+            =================================================== */}
 
             <div
               className="
@@ -727,8 +1007,14 @@ const Sidebar = ({
                   {history.map((item) => {
                     const repoName =
                       item.repoUrl
-                        ?.replace(/^https?:\/\//, "")
-                        ?.replace(/\/$/, "")
+                        ?.replace(
+                          /^https?:\/\/(www\.)?/,
+                          ""
+                        )
+                        ?.replace(
+                          /\/$/,
+                          ""
+                        )
                         ?.split("/")
                         ?.slice(-1)[0] ||
                       "Repository";
@@ -796,116 +1082,119 @@ const Sidebar = ({
                 USAGE
             =================================================== */}
 
-            <div
-              className="
-                mt-3
-                mb-3
-                rounded-2xl
-                border
-                border-white/[0.07]
-                bg-white/[0.025]
-                p-4
-              "
-            >
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
-                <span
-                  className="
-                    text-[11px]
-                    uppercase
-                    tracking-[0.12em]
-                    text-white/35
-                  "
-                >
-                  Free reviews
-                </span>
-
-                <span
-                  className="
-                    text-[12px]
-                    text-white/65
-                  "
-                >
-                  {reviewCount}/{freeReviewLimit}
-                </span>
-              </div>
-
-              {/* Progress */}
-
+            {isFreeUser && (
               <div
                 className="
                   mt-3
-                  h-1
-                  w-full
-                  rounded-full
-                  bg-white/[0.07]
-                  overflow-hidden
+                  mb-3
+                  rounded-2xl
+                  border
+                  border-white/[0.07]
+                  bg-white/[0.025]
+                  p-4
                 "
               >
                 <div
                   className="
-                    h-full
-                    rounded-full
-                    bg-white/55
-                    transition-all
-                    duration-500
-                  "
-                  style={{
-                    width: `${usagePercentage}%`,
-                  }}
-                />
-              </div>
-
-              <div
-                className="
-                  mt-2
-                  text-[10px]
-                  text-white/25
-                "
-              >
-                {remaining > 0
-                  ? `${remaining} review${
-                      remaining === 1
-                        ? ""
-                        : "s"
-                    } remaining`
-                  : "Free limit reached"}
-              </div>
-
-              {/* Upgrade */}
-
-              {remaining === 0 && (
-                <button
-                  type="button"
-                  onClick={onUpgrade}
-                  className="
-                    mt-3
-                    w-full
-                    h-9
-                    rounded-lg
                     flex
                     items-center
-                    justify-center
-                    gap-2
-                    text-[11px]
-                    font-medium
-                    text-[#080b09]
-                    bg-[#eeeae1]
-                    hover:bg-white
-                    transition-all
-                    duration-200
+                    justify-between
                   "
                 >
-                  <ArrowUpIcon size={14} />
-                  Upgrade
-                </button>
-              )}
-            </div>
+                  <span
+                    className="
+                      text-[11px]
+                      uppercase
+                      tracking-[0.12em]
+                      text-white/35
+                    "
+                  >
+                    Free reviews
+                  </span>
+
+                  <span
+                    className="
+                      text-[12px]
+                      text-white/65
+                    "
+                  >
+                    {reviewCount}/
+                    {freeReviewLimit}
+                  </span>
+                </div>
+
+                {/* Progress */}
+
+                <div
+                  className="
+                    mt-3
+                    h-1
+                    w-full
+                    rounded-full
+                    bg-white/[0.07]
+                    overflow-hidden
+                  "
+                >
+                  <div
+                    className="
+                      h-full
+                      rounded-full
+                      bg-white/55
+                      transition-all
+                      duration-500
+                    "
+                    style={{
+                      width: `${usagePercentage}%`,
+                    }}
+                  />
+                </div>
+
+                <div
+                  className="
+                    mt-2
+                    text-[10px]
+                    text-white/25
+                  "
+                >
+                  {remaining > 0
+                    ? `${remaining} review${
+                        remaining === 1
+                          ? ""
+                          : "s"
+                      } remaining`
+                    : "Free limit reached"}
+                </div>
+
+                {/* Upgrade */}
+
+                {remaining === 0 && (
+                  <button
+                    type="button"
+                    onClick={onUpgrade}
+                    className="
+                      mt-3
+                      w-full
+                      h-9
+                      rounded-lg
+                      flex
+                      items-center
+                      justify-center
+                      gap-2
+                      text-[11px]
+                      font-medium
+                      text-[#151314]
+                      bg-[#eeeae1]
+                      hover:bg-white
+                      transition-all
+                      duration-200
+                    "
+                  >
+                    <ArrowUpIcon size={14} />
+                    Upgrade
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* ==================================================
@@ -914,6 +1203,7 @@ const Sidebar = ({
 
           <div
             className="
+              relative
               shrink-0
               border-t
               border-white/[0.06]
@@ -921,14 +1211,24 @@ const Sidebar = ({
               py-3
             "
           >
-            <div
+            {/* Profile button */}
+
+            <button
+              type="button"
+              onClick={() =>
+                setProfileOpen(
+                  (prev) => !prev
+                )
+              }
               className="
+                w-full
                 flex
                 items-center
                 gap-3
                 rounded-xl
                 px-2
                 py-2
+                text-left
                 hover:bg-white/[0.035]
                 transition-all
               "
@@ -963,7 +1263,8 @@ const Sidebar = ({
                     text-white/75
                   "
                 >
-                  {user?.name || "CodeLens User"}
+                  {user?.name ||
+                    "CodeLens User"}
                 </div>
 
                 <div
@@ -978,29 +1279,217 @@ const Sidebar = ({
                 </div>
               </div>
 
-              {/* Logout */}
+              {/* Chevron */}
 
-              <button
-                type="button"
-                onClick={handleLogout}
-                title="Logout"
+              <div
                 className="
-                  w-8
-                  h-8
-                  shrink-0
-                  rounded-lg
-                  flex
-                  items-center
-                  justify-center
-                  text-white/25
-                  hover:text-white/70
-                  hover:bg-white/[0.05]
-                  transition-all
+                  text-white/35
+                  transition-transform
                 "
               >
-                <LogoutIcon size={16} />
-              </button>
-            </div>
+                <ChevronIcon
+                  direction={
+                    profileOpen
+                      ? "down"
+                      : "left"
+                  }
+                  size={15}
+                />
+              </div>
+            </button>
+
+            {/* ==================================================
+                PROFILE MENU
+            =================================================== */}
+
+            {profileOpen && (
+              <div
+                className="
+                  absolute
+                  left-3
+                  right-3
+                  bottom-[calc(100%-4px)]
+                  mb-2
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-white/[0.09]
+                  bg-[#151314]
+                  shadow-2xl
+                  z-[100]
+                "
+              >
+                {/* ==================================================
+                    ACCOUNT INFORMATION
+                =================================================== */}
+
+                <div
+                  className="
+                    px-4
+                    py-3
+                    border-b
+                    border-white/[0.07]
+                  "
+                >
+                  <div className="text-[12px] text-white/80 truncate">
+                    {user?.name ||
+                      "CodeLens User"}
+                  </div>
+
+                  <div className="mt-1 text-[10px] text-white/30 truncate">
+                    {user?.email || ""}
+                  </div>
+                </div>
+
+                {/* ==================================================
+                    TRY FOR FREE
+                =================================================== */}
+
+                <button
+                  type="button"
+                  onClick={handleTryForFree}
+                  className="
+                    w-full
+                    px-4
+                    py-3
+                    flex
+                    items-center
+                    gap-3
+                    text-left
+                    hover:bg-white/[0.045]
+                    transition-all
+                  "
+                >
+                  <div
+                    className="
+                      w-8
+                      h-8
+                      rounded-lg
+                      border
+                      border-white/[0.08]
+                      bg-white/[0.025]
+                      flex
+                      items-center
+                      justify-center
+                      text-white/65
+                    "
+                  >
+                    <PlusIcon size={16} />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12px] text-white/75">
+                      Try for Free
+                    </div>
+
+                    <div className="mt-1 text-[10px] text-white/30">
+                      {!isFreeUser
+                        ? "Continue reviewing"
+                        : remaining > 0
+                        ? `${remaining} free review${
+                            remaining === 1
+                              ? ""
+                              : "s"
+                          } remaining`
+                        : "Free limit reached"}
+                    </div>
+                  </div>
+                </button>
+
+                {/* ==================================================
+                    UPGRADE
+                =================================================== */}
+
+                {isFreeUser &&
+                  remaining === 0 && (
+                    <button
+                      type="button"
+                      onClick={handleUpgrade}
+                      className="
+                        w-full
+                        px-4
+                        py-3
+                        flex
+                        items-center
+                        gap-3
+                        text-left
+                        border-t
+                        border-white/[0.06]
+                        hover:bg-white/[0.045]
+                        transition-all
+                      "
+                    >
+                      <div
+                        className="
+                          w-8
+                          h-8
+                          rounded-lg
+                          bg-white
+                          flex
+                          items-center
+                          justify-center
+                          text-[#151314]
+                        "
+                      >
+                        <ArrowUpIcon size={15} />
+                      </div>
+
+                      <div>
+                        <div className="text-[12px] text-white/80">
+                          Upgrade to Pro
+                        </div>
+
+                        <div className="mt-1 text-[10px] text-white/30">
+                          Continue reviewing for $20
+                        </div>
+                      </div>
+                    </button>
+                  )}
+
+                {/* ==================================================
+                    LOG OUT
+                =================================================== */}
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="
+                    w-full
+                    px-4
+                    py-3
+                    flex
+                    items-center
+                    gap-3
+                    text-left
+                    border-t
+                    border-white/[0.06]
+                    text-red-400/70
+                    hover:bg-red-400/[0.05]
+                    hover:text-red-400
+                    transition-all
+                  "
+                >
+                  <div
+                    className="
+                      w-8
+                      h-8
+                      rounded-lg
+                      border
+                      border-red-400/[0.10]
+                      flex
+                      items-center
+                      justify-center
+                    "
+                  >
+                    <LogoutIcon size={15} />
+                  </div>
+
+                  <span className="text-[12px]">
+                    Log out
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}
