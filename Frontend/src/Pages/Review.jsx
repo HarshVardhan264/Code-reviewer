@@ -1,712 +1,1722 @@
-import { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+
 import axios from "axios";
 import gsap from "gsap";
 
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
 import RepoInput from "../components/RepoInput";
 import Loading from "../components/Loading";
 import ReviewResult from "../components/ReviewResult";
+import { Link } from "react-router-dom";
 
-function Review() {
-    const [repoUrl, setRepoUrl] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState(null);
-    const [error, setError] = useState("");
+// ============================================================
+// CONFIG
+// ============================================================
 
-    const pageRef = useRef(null);
-    const lensRef = useRef(null);
-    const eyebrowRef = useRef(null);
-    const titleRef = useRef(null);
-    const descriptionRef = useRef(null);
-    const inputRef = useRef(null);
-    const statusRef = useRef(null);
-    const resultRef = useRef(null);
+const API_URL = "http://localhost:5000";
+const FREE_REVIEW_LIMIT = 4;
 
-    /* =========================================
-       INTRO ANIMATION
-    ========================================= */
+// ============================================================
+// LENS ICON
+// Same CodeLens logo used in Navbar
+// ============================================================
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            const tl = gsap.timeline({
-                defaults: {
-                    ease: "power3.out",
-                },
-            });
+const Lens = ({ size = "0.78em" }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+    className="inline-block align-[-0.02em]"
+  >
+    <circle
+      cx="12"
+      cy="12"
+      r="10.5"
+      stroke="currentColor"
+      strokeWidth="2.4"
+    />
 
-            tl.from(lensRef.current, {
-                opacity: 0,
-                scale: 0.7,
-                duration: 0.7,
-            })
-                .from(
-                    eyebrowRef.current,
-                    {
-                        opacity: 0,
-                        y: 15,
-                        duration: 0.5,
-                    },
-                    "-=0.3"
-                )
-                .from(
-                    titleRef.current,
-                    {
-                        opacity: 0,
-                        y: 35,
-                        duration: 0.8,
-                    },
-                    "-=0.25"
-                )
-                .from(
-                    descriptionRef.current,
-                    {
-                        opacity: 0,
-                        y: 15,
-                        duration: 0.5,
-                    },
-                    "-=0.35"
-                )
-                .from(
-                    inputRef.current,
-                    {
-                        opacity: 0,
-                        y: 25,
-                        duration: 0.6,
-                    },
-                    "-=0.25"
-                )
-                .from(
-                    statusRef.current,
-                    {
-                        opacity: 0,
-                        y: 10,
-                        duration: 0.4,
-                    },
-                    "-=0.25"
-                );
+    <circle
+      cx="12"
+      cy="12"
+      r="4"
+      stroke="currentColor"
+      strokeWidth="2.4"
+    />
+  </svg>
+);
 
-            gsap.to(lensRef.current, {
-                y: -6,
-                duration: 2.5,
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut",
-            });
-        }, pageRef);
+// ============================================================
+// ARROW ICON
+// ============================================================
 
-        return () => ctx.revert();
-    }, []);
+const ArrowLeftIcon = ({ size = 17 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M19 12H5" />
+    <path d="m12 19-7-7 7-7" />
+  </svg>
+);
 
-    /* =========================================
-       RESULT ANIMATION
-    ========================================= */
+// ============================================================
+// LOCK ICON
+// ============================================================
 
-    useEffect(() => {
-        if (!result || !resultRef.current) return;
+const LockIcon = ({ size = 20 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect
+      x="4"
+      y="10"
+      width="16"
+      height="11"
+      rx="2"
+    />
 
-        gsap.fromTo(
-            resultRef.current,
-            {
-                opacity: 0,
-                y: 35,
-            },
-            {
-                opacity: 1,
-                y: 0,
-                duration: 0.8,
-                ease: "power3.out",
-            }
+    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+  </svg>
+);
+
+// ============================================================
+// SPARK ICON
+// ============================================================
+
+const SparkIcon = ({ size = 19 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 2l1.6 6.4L20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6L12 2z" />
+    <path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16z" />
+  </svg>
+);
+
+// ============================================================
+// CLOSE ICON
+// ============================================================
+
+const CloseIcon = ({ size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+  >
+    <path d="M6 6l12 12" />
+    <path d="M18 6L6 18" />
+  </svg>
+);
+
+// ============================================================
+// REVIEW PAGE
+// ============================================================
+
+const Review = () => {
+  // ==========================================================
+  // REFS
+  // ==========================================================
+
+  const pageRef = useRef(null);
+  const heroRef = useRef(null);
+  const resultRef = useRef(null);
+
+  const authPopupRef = useRef(null);
+  const upgradePopupRef = useRef(null);
+
+  // ==========================================================
+  // STATE
+  // ==========================================================
+
+  const [repoUrl, setRepoUrl] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  const [result, setResult] = useState(null);
+
+  const [error, setError] = useState("");
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [user, setUser] = useState(null);
+
+  const [reviewCount, setReviewCount] = useState(0);
+
+  const [history, setHistory] = useState([]);
+
+  const [sidebarWidth, setSidebarWidth] = useState(280);
+
+  const [authPopup, setAuthPopup] = useState(false);
+
+  const [upgradePopup, setUpgradePopup] = useState(false);
+
+  // ==========================================================
+  // GET TOKEN
+  // ==========================================================
+
+  const getToken = () => {
+    return localStorage.getItem("codelens_token");
+  };
+
+  // ==========================================================
+  // CHECK AUTH
+  // ==========================================================
+
+  const checkAuthentication = useCallback(async () => {
+    const token = getToken();
+
+    if (!token) {
+      setIsLoggedIn(false);
+      setUser(null);
+      return null;
+    }
+
+    try {
+      const response = await axios.get(
+        `${API_URL}/api/auth/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (
+        response.data?.success &&
+        response.data?.user
+      ) {
+        const currentUser = response.data.user;
+
+        setIsLoggedIn(true);
+        setUser(currentUser);
+
+        setReviewCount(
+          currentUser.reviewsUsed || 0
         );
-    }, [result]);
 
-    /* =========================================
-       REVIEW REPOSITORY
-    ========================================= */
+        localStorage.setItem(
+          "codelens_user",
+          JSON.stringify(currentUser)
+        );
 
-    const handleReview = async () => {
-        if (!repoUrl.trim()) {
-            setError("Please enter a GitHub repository URL");
-            return;
+        localStorage.setItem(
+          "isLoggedIn",
+          "true"
+        );
+
+        return currentUser;
+      }
+
+      return null;
+    } catch (err) {
+      console.error(
+        "Authentication check failed:",
+        err
+      );
+
+      if (
+        err.response?.status === 401 ||
+        err.response?.status === 403
+      ) {
+        localStorage.removeItem(
+          "codelens_token"
+        );
+
+        localStorage.removeItem(
+          "codelens_user"
+        );
+
+        localStorage.removeItem(
+          "isLoggedIn"
+        );
+
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+
+      return null;
+    }
+  }, []);
+
+  // ==========================================================
+  // FETCH HISTORY
+  // ==========================================================
+
+  const fetchHistory = useCallback(async () => {
+    const token = getToken();
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${API_URL}/api/review/history`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
 
-        setLoading(true);
-        setError("");
-        setResult(null);
+      if (response.data?.success) {
+        setHistory(
+          response.data.reviews || []
+        );
+      }
+    } catch (err) {
+      console.error(
+        "Unable to fetch review history:",
+        err
+      );
 
-        try {
-            const response = await axios.post(
-                "http://localhost:5000/api/review",
-                {
-                    repoUrl,
-                }
-            );
+      if (
+        err.response?.status === 401
+      ) {
+        localStorage.removeItem(
+          "codelens_token"
+        );
 
-            setResult(response.data);
-        } catch (err) {
-            console.error(err);
+        localStorage.removeItem(
+          "codelens_user"
+        );
 
-            setError(
-                err.response?.data?.message ||
-                    "Something went wrong while reviewing the repository."
-            );
-        } finally {
-            setLoading(false);
-        }
+        localStorage.removeItem(
+          "isLoggedIn"
+        );
+
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    }
+  }, []);
+
+  // ==========================================================
+  // INITIAL LOAD
+  // ==========================================================
+
+  useLayoutEffect(() => {
+    let mounted = true;
+
+    const initialize = async () => {
+      if (!mounted) return;
+
+      const currentUser =
+        await checkAuthentication();
+
+      if (
+        currentUser &&
+        mounted
+      ) {
+        await fetchHistory();
+      }
     };
 
-    /* =========================================
-       NEW REVIEW
-    ========================================= */
+    initialize();
 
-    const handleNewReview = () => {
-        setResult(null);
-        setRepoUrl("");
-        setError("");
+    return () => {
+      mounted = false;
+    };
+  }, [
+    checkAuthentication,
+    fetchHistory,
+  ]);
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
+  // ==========================================================
+  // PAGE INTRO ANIMATION
+  // ==========================================================
+
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        heroRef.current,
+        {
+          opacity: 0,
+          y: 25,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: "power3.out",
+        }
+      );
+    }, pageRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  // ==========================================================
+  // RESULT ANIMATION
+  // ==========================================================
+
+  useLayoutEffect(() => {
+    if (!result) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        resultRef.current,
+        {
+          opacity: 0,
+          y: 25,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: "power3.out",
+        }
+      );
+    }, pageRef);
+
+    return () => ctx.revert();
+  }, [result]);
+
+  // ==========================================================
+  // AUTH POPUP ANIMATION
+  // ==========================================================
+
+  useLayoutEffect(() => {
+    if (!authPopup) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        authPopupRef.current,
+        {
+          opacity: 0,
+          scale: 0.94,
+          y: 15,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.35,
+          ease: "power3.out",
+        }
+      );
+    });
+
+    return () => ctx.revert();
+  }, [authPopup]);
+
+  // ==========================================================
+  // UPGRADE POPUP ANIMATION
+  // ==========================================================
+
+  useLayoutEffect(() => {
+    if (!upgradePopup) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        upgradePopupRef.current,
+        {
+          opacity: 0,
+          scale: 0.94,
+          y: 15,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.35,
+          ease: "power3.out",
+        }
+      );
+    });
+
+    return () => ctx.revert();
+  }, [upgradePopup]);
+
+  // ==========================================================
+  // AUTH REDIRECT
+  // ==========================================================
+
+  const goToLogin = () => {
+    window.location.href = "/login";
+  };
+
+  const goToSignup = () => {
+    window.location.href = "/signup";
+  };
+
+  // ==========================================================
+  // CAN REVIEW?
+  // ==========================================================
+
+  const canReview = () => {
+    // User is not logged in
+    if (!isLoggedIn) {
+      setAuthPopup(true);
+      return false;
+    }
+
+    // Free limit reached
+    if (
+      user?.plan === "free" &&
+      reviewCount >= FREE_REVIEW_LIMIT
+    ) {
+      setUpgradePopup(true);
+      return false;
+    }
+
+    return true;
+  };
+
+  // ==========================================================
+  // REVIEW REPOSITORY
+  // ==========================================================
+
+  const handleReview = async () => {
+    setError("");
+
+    // Empty URL
+    if (!repoUrl.trim()) {
+      setError(
+        "Please enter a GitHub repository URL."
+      );
+      return;
+    }
+
+    // Authentication / limit
+    if (!canReview()) {
+      return;
+    }
+
+    const token = getToken();
+
+    if (!token) {
+      setIsLoggedIn(false);
+      setAuthPopup(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setResult(null);
+
+      const response = await axios.post(
+        `${API_URL}/api/review`,
+        {
+          repoUrl: repoUrl.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type":
+              "application/json",
+          },
+        }
+      );
+
+      if (response.data?.success) {
+        // IMPORTANT:
+        // Backend returns:
+        //
+        // {
+        //   success,
+        //   reviewId,
+        //   repoUrl,
+        //   result,
+        //   usage
+        // }
+        //
+        // ReviewResult should receive the actual
+        // result object.
+
+        setResult(
+          response.data.result
+        );
+
+        // Update usage
+        if (response.data.usage) {
+          setReviewCount(
+            response.data.usage.used || 0
+          );
+        } else {
+          setReviewCount(
+            (prev) => prev + 1
+          );
+        }
+
+        // Update local user
+        setUser((prev) => {
+          if (!prev) return prev;
+
+          const updatedUser = {
+            ...prev,
+            reviewsUsed:
+              response.data.usage
+                ?.used ??
+              (prev.reviewsUsed || 0) + 1,
+          };
+
+          localStorage.setItem(
+            "codelens_user",
+            JSON.stringify(
+              updatedUser
+            )
+          );
+
+          return updatedUser;
         });
-    };
 
-    return (
-        <div
-            ref={pageRef}
-            className="
-                relative
-                min-h-screen
-                overflow-x-hidden
-                bg-[#0b0b0a]
-                text-[#eeeae1]
-            "
+        // Refresh history
+        await fetchHistory();
+
+        // Scroll to result
+        setTimeout(() => {
+          resultRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }
+    } catch (err) {
+      console.error(
+        "Repository review failed:",
+        err
+      );
+
+      // ======================================================
+      // UNAUTHORIZED
+      // ======================================================
+
+      if (
+        err.response?.status === 401
+      ) {
+        localStorage.removeItem(
+          "codelens_token"
+        );
+
+        localStorage.removeItem(
+          "codelens_user"
+        );
+
+        localStorage.removeItem(
+          "isLoggedIn"
+        );
+
+        setIsLoggedIn(false);
+        setUser(null);
+
+        setAuthPopup(true);
+
+        return;
+      }
+
+      // ======================================================
+      // REVIEW LIMIT
+      // ======================================================
+
+      if (
+        err.response?.status === 402 ||
+        err.response?.data?.code ===
+          "REVIEW_LIMIT_REACHED"
+      ) {
+        setUpgradePopup(true);
+        return;
+      }
+
+      // ======================================================
+      // SERVER ERROR
+      // ======================================================
+
+      if (
+        err.response?.data?.message
+      ) {
+        setError(
+          err.response.data.message
+        );
+      } else if (
+        err.request
+      ) {
+        setError(
+          "Unable to connect to CodeLens server."
+        );
+      } else {
+        setError(
+          "Something went wrong while reviewing the repository."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ==========================================================
+  // OPEN HISTORY ITEM
+  // ==========================================================
+
+  const handleOpenHistory = async (
+    item
+  ) => {
+    if (!item?._id) return;
+
+    const token = getToken();
+
+    if (!token) {
+      setAuthPopup(true);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await axios.get(
+        `${API_URL}/api/review/${item._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (
+        response.data?.success &&
+        response.data?.review
+      ) {
+        const review =
+          response.data.review;
+
+        setRepoUrl(
+          review.repoUrl || ""
+        );
+
+        // ReviewResult gets the actual result
+        setResult(
+          review.result
+        );
+
+        setTimeout(() => {
+          resultRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }
+    } catch (err) {
+      console.error(
+        "Unable to open review:",
+        err
+      );
+
+      if (
+        err.response?.status === 401
+      ) {
+        localStorage.removeItem(
+          "codelens_token"
+        );
+
+        localStorage.removeItem(
+          "codelens_user"
+        );
+
+        localStorage.removeItem(
+          "isLoggedIn"
+        );
+
+        setIsLoggedIn(false);
+        setUser(null);
+
+        setAuthPopup(true);
+
+        return;
+      }
+
+      setError(
+        err.response?.data?.message ||
+          "Unable to load this review."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ==========================================================
+  // NEW REVIEW
+  // ==========================================================
+
+  const handleNewReview = () => {
+    setResult(null);
+    setError("");
+    setRepoUrl("");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  // ==========================================================
+  // UPGRADE
+  // ==========================================================
+
+  const handleUpgrade = () => {
+    setUpgradePopup(true);
+  };
+
+  // ==========================================================
+  // CLOSE POPUPS
+  // ==========================================================
+
+  const closeAuthPopup = () => {
+    setAuthPopup(false);
+  };
+
+  const closeUpgradePopup = () => {
+    setUpgradePopup(false);
+  };
+
+  // ==========================================================
+  // HANDLE ENTER
+  // ==========================================================
+
+  const handleKeyDown = (event) => {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey &&
+      !loading
+    ) {
+      event.preventDefault();
+      handleReview();
+    }
+  };
+
+  // ==========================================================
+  // RENDER
+  // ==========================================================
+
+  return (
+    <div
+      ref={pageRef}
+      className="
+        min-h-screen
+        bg-[#080b09]
+        text-[#eeeae1]
+        overflow-x-hidden
+      "
+    >
+      {/* ======================================================
+          BACKGROUND GRID
+      ======================================================= */}
+
+      <div
+        className="
+          pointer-events-none
+          fixed
+          inset-0
+          opacity-[0.035]
+        "
+        style={{
+          backgroundImage: `
+            linear-gradient(
+              rgba(255,255,255,0.5) 1px,
+              transparent 1px
+            ),
+            linear-gradient(
+              90deg,
+              rgba(255,255,255,0.5) 1px,
+              transparent 1px
+            )
+          `,
+          backgroundSize: "48px 48px",
+        }}
+      />
+
+      {/* ======================================================
+          TOP GLOW
+      ======================================================= */}
+
+      <div
+        className="
+          pointer-events-none
+          fixed
+          top-0
+          left-1/2
+          -translate-x-1/2
+          w-[700px]
+          h-[350px]
+          rounded-full
+          bg-white/[0.025]
+          blur-[120px]
+        "
+      />
+
+      {/* ======================================================
+          SIDEBAR
+      ======================================================= */}
+
+      {isLoggedIn && (
+        <Sidebar
+          user={user}
+          reviewCount={reviewCount}
+          history={history}
+          freeReviewLimit={
+            FREE_REVIEW_LIMIT
+          }
+          onOpenHistory={
+            handleOpenHistory
+          }
+          onUpgrade={handleUpgrade}
+          onWidthChange={
+            setSidebarWidth
+          }
+        />
+      )}
+
+      {/* ======================================================
+          MOBILE TOP BAR
+      ======================================================= */}
+
+      <div
+        className="
+          lg:hidden
+          fixed
+          top-0
+          left-0
+          right-0
+          z-40
+          h-[64px]
+          px-5
+          flex
+          items-center
+          justify-between
+          bg-[#080b09]/90
+          backdrop-blur-xl
+          border-b
+          border-white/[0.06]
+        "
+      >
+        <Link
+          to="/"
+          className="
+            text-[19px]
+            font-medium
+            tracking-[-0.05em]
+            text-[#eeeae1]
+            no-underline
+          "
         >
-            {/* =========================================
-                NAVBAR
-            ========================================= */}
+          C<Lens />
+          <span>delens</span>
+        </Link>
 
-            <Navbar />
+        {!isLoggedIn ? (
+          <button
+            onClick={goToLogin}
+            className="
+              text-[12px]
+              text-white/55
+              hover:text-white
+              transition
+            "
+          >
+            Login
+          </button>
+        ) : (
+          <button
+            onClick={handleNewReview}
+            className="
+              w-9
+              h-9
+              rounded-lg
+              border
+              border-white/[0.08]
+              flex
+              items-center
+              justify-center
+              text-white/60
+            "
+          >
+            +
+          </button>
+        )}
+      </div>
 
-            {/* =========================================
-                BACKGROUND
-            ========================================= */}
+      {/* ======================================================
+          MAIN
+      ======================================================= */}
 
-            <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      <main
+        className="
+          relative
+          min-h-screen
+          transition-[margin]
+          duration-300
+          ease-out
+          pt-[64px]
+          lg:pt-0
+        "
+        style={{
+          marginLeft:
+            isLoggedIn
+              ? `${sidebarWidth}px`
+              : "0px",
+        }}
+      >
+        {/* ====================================================
+            HERO
+        ===================================================== */}
 
-                {/* Main diagonal lines */}
+        <section
+          ref={heroRef}
+          className="
+            min-h-screen
+            flex
+            items-center
+            justify-center
+            px-5
+            sm:px-8
+            lg:px-12
+            py-20
+          "
+        >
+          <div
+            className="
+              w-full
+              max-w-[900px]
+              mx-auto
+            "
+          >
+            {/* Small label */}
 
-                <div
-                    className="
-                        absolute
-                        -left-[20%]
-                        -top-[30%]
-                        h-[160%]
-                        w-[140%]
-                        rotate-[18deg]
-                        opacity-[0.055]
-                    "
-                    style={{
-                        backgroundImage: `
-                            repeating-linear-gradient(
-                                0deg,
-                                transparent 0px,
-                                transparent 30px,
-                                rgba(238,234,225,0.8) 31px,
-                                transparent 32px
-                            )
-                        `,
-                    }}
-                />
+            <div
+              className="
+                flex
+                items-center
+                justify-center
+                gap-2
+                mb-7
+                text-[10px]
+                uppercase
+                tracking-[0.22em]
+                text-white/30
+              "
+            >
+              <span
+                className="
+                  w-1.5
+                  h-1.5
+                  rounded-full
+                  bg-white/45
+                "
+              />
 
-                {/* Fine diagonal lines */}
-
-                <div
-                    className="
-                        absolute
-                        -left-[20%]
-                        -top-[30%]
-                        h-[160%]
-                        w-[140%]
-                        rotate-[18deg]
-                        opacity-[0.018]
-                    "
-                    style={{
-                        backgroundImage: `
-                            repeating-linear-gradient(
-                                0deg,
-                                transparent 0px,
-                                transparent 9px,
-                                rgba(238,234,225,0.8) 10px,
-                                transparent 11px
-                            )
-                        `,
-                    }}
-                />
-
-                {/* Center fade */}
-
-                <div
-                    className="
-                        absolute
-                        inset-0
-                        bg-[radial-gradient(
-                            circle_at_center,
-                            transparent_10%,
-                            #0b0b0a_88%
-                        )]
-                    "
-                />
-
-                {/* Top fade */}
-
-                <div
-                    className="
-                        absolute
-                        inset-x-0
-                        top-0
-                        h-[220px]
-                        bg-gradient-to-b
-                        from-[#0b0b0a]
-                        to-transparent
-                    "
-                />
-
-                {/* Bottom fade */}
-
-                <div
-                    className="
-                        absolute
-                        inset-x-0
-                        bottom-0
-                        h-[180px]
-                        bg-gradient-to-t
-                        from-[#0b0b0a]
-                        to-transparent
-                    "
-                />
+              AI CODE REVIEW
             </div>
 
-            {/* =========================================
-                MAIN
-            ========================================= */}
+            {/* Heading */}
 
-            <main className="relative z-10 pt-[90px]">
+            <h1
+              className="
+                text-center
+                font-medium
+                tracking-[-0.055em]
+                leading-[0.95]
+                text-[48px]
+                sm:text-[64px]
+                lg:text-[82px]
+                text-[#eeeae1]
+              "
+            >
+              Review your code.
+              <br />
 
-                {/* =====================================
-                    INPUT / HERO
-                ===================================== */}
+              <span className="text-white/25">
+                Find what you missed.
+              </span>
+            </h1>
 
-                {!result && !loading && (
-                    <section
-                        className="
-                            flex
-                            min-h-[calc(100vh-90px)]
-                            flex-col
-                            items-center
-                            px-6
-                            pb-20
-                            pt-[115px]
-                            sm:pt-[125px]
-                        "
-                    >
+            {/* Description */}
 
-                        {/* Lens */}
+            <p
+              className="
+                max-w-[590px]
+                mx-auto
+                mt-7
+                text-center
+                text-[14px]
+                sm:text-[15px]
+                leading-7
+                text-white/38
+              "
+            >
+              Give CodeLens a repository and
+              let three specialized AI agents
+              inspect it for bugs, security
+              vulnerabilities, and code quality
+              issues.
+            </p>
 
-                        <div
-                            ref={lensRef}
-                            className="
-                                mb-9
-                                flex
-                                h-[58px]
-                                w-[58px]
-                                items-center
-                                justify-center
-                                text-[#eeeae1]/70
-                            "
-                        >
-                            <svg
-                                width="58"
-                                height="58"
-                                viewBox="0 0 58 58"
-                                fill="none"
-                            >
-                                <circle
-                                    cx="29"
-                                    cy="29"
-                                    r="27"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                />
+            {/* =================================================
+                REPO INPUT
+            ================================================== */}
 
-                                <circle
-                                    cx="29"
-                                    cy="29"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                />
-                            </svg>
-                        </div>
+            <div className="mt-12">
+              <RepoInput
+                value={repoUrl}
+                onChange={setRepoUrl}
+                onSubmit={handleReview}
+                onKeyDown={handleKeyDown}
+                loading={loading}
+              />
+            </div>
 
-                        {/* Eyebrow */}
+            {/* Error */}
 
-                        <div
-                            ref={eyebrowRef}
-                            className="
-                                mb-7
-                                flex
-                                items-center
-                                gap-3
-                            "
-                        >
-                            <span className="h-px w-9 bg-[#eeeae1]/20" />
+            {error && (
+              <div
+                className="
+                  mt-4
+                  mx-auto
+                  max-w-[700px]
+                  rounded-xl
+                  border
+                  border-red-400/10
+                  bg-red-400/[0.035]
+                  px-4
+                  py-3
+                  text-center
+                  text-[12px]
+                  text-red-300/75
+                "
+              >
+                {error}
+              </div>
+            )}
 
-                            <span
-                                className="
-                                    font-mono
-                                    text-[9px]
-                                    uppercase
-                                    tracking-[0.28em]
-                                    text-[#eeeae1]/35
-                                "
-                            >
-                                Repository Review
-                            </span>
+            {/* =================================================
+                INFO ROW
+            ================================================== */}
 
-                            <span className="h-px w-9 bg-[#eeeae1]/20" />
-                        </div>
+            <div
+              className="
+                mt-6
+                flex
+                flex-wrap
+                items-center
+                justify-center
+                gap-x-6
+                gap-y-2
+                text-[10px]
+                uppercase
+                tracking-[0.12em]
+                text-white/22
+              "
+            >
+              <span>
+                No installation
+              </span>
 
-                        {/* Main heading */}
+              <span className="text-white/10">
+                •
+              </span>
 
-                        <h1
-                            ref={titleRef}
-                            className="
-                                text-center
-                                text-[clamp(4rem,7.5vw,7.5rem)]
-                                font-medium
-                                leading-[0.94]
-                                tracking-[-0.045em]
-                            "
-                        >
-                            Review your
-                            <br />
+              <span>
+                AI powered
+              </span>
 
-                            <span className="text-[#eeeae1]/30">
-                                code.
-                            </span>
-                        </h1>
+              <span className="text-white/10">
+                •
+              </span>
 
-                        {/* Description */}
+              <span>
+                {isLoggedIn
+                  ? `${reviewCount}/${FREE_REVIEW_LIMIT} free reviews`
+                  : "Login required"}
+              </span>
+            </div>
+          </div>
+        </section>
 
-                        <p
-                            ref={descriptionRef}
-                            className="
-                                mt-9
-                                max-w-[560px]
-                                text-center
-                                text-[13px]
-                                leading-[1.7]
-                                tracking-[-0.01em]
-                                text-[#eeeae1]/35
-                                sm:text-[14px]
-                            "
-                        >
-                            Paste a GitHub repository and let CodeLens
-                            inspect it line by line for bugs, security
-                            risks, performance issues, and code quality.
-                        </p>
+        {/* ====================================================
+            LOADING
+        ===================================================== */}
 
-                        {/* Repository input */}
+        {loading && (
+          <section
+            className="
+              px-5
+              sm:px-8
+              lg:px-12
+              pb-24
+            "
+          >
+            <div
+              className="
+                max-w-[900px]
+                mx-auto
+              "
+            >
+              <Loading />
+            </div>
+          </section>
+        )}
 
-                        <div
-                            ref={inputRef}
-                            className="
-                                mt-11
-                                w-full
-                                max-w-[780px]
-                            "
-                        >
-                            <div
-                                className="
-                                    border
-                                    border-[#eeeae1]/10
-                                    bg-[#0d0d0c]/80
-                                    p-[9px]
-                                "
-                            >
-                                {/* Input header */}
+        {/* ====================================================
+            RESULT
+        ===================================================== */}
 
-                                <div
-                                    className="
-                                        flex
-                                        items-center
-                                        justify-between
-                                        px-5
-                                        pb-4
-                                        pt-3
-                                    "
-                                >
-                                    <span
-                                        className="
-                                            font-mono
-                                            text-[9px]
-                                            uppercase
-                                            tracking-[0.25em]
-                                            text-[#eeeae1]/35
-                                        "
-                                    >
-                                        GitHub Repository
-                                    </span>
+        {result && !loading && (
+          <section
+            ref={resultRef}
+            className="
+              px-5
+              sm:px-8
+              lg:px-12
+              pb-32
+            "
+          >
+            <div
+              className="
+                max-w-[1100px]
+                mx-auto
+              "
+            >
+              {/* Result header */}
 
-                                    <span
-                                        className="
-                                            font-mono
-                                            text-[8px]
-                                            uppercase
-                                            tracking-[0.2em]
-                                            text-[#eeeae1]/20
-                                        "
-                                    >
-                                        HTTPS
-                                    </span>
-                                </div>
+              <div
+                className="
+                  flex
+                  flex-col
+                  sm:flex-row
+                  sm:items-end
+                  justify-between
+                  gap-5
+                  mb-8
+                "
+              >
+                <div>
+                  <div
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                      mb-3
+                      text-[10px]
+                      uppercase
+                      tracking-[0.18em]
+                      text-white/25
+                    "
+                  >
+                    <SparkIcon size={14} />
 
-                                {/* Input */}
+                    REVIEW COMPLETE
+                  </div>
 
-                                <div
-                                    className="
-                                        border
-                                        border-[#eeeae1]/10
-                                        bg-[#111110]
-                                        px-3
-                                        py-3
-                                    "
-                                >
-                                    <RepoInput
-                                        repoUrl={repoUrl}
-                                        setRepoUrl={setRepoUrl}
-                                        handleReview={handleReview}
-                                        loading={loading}
-                                    />
-                                </div>
-                            </div>
+                  <h2
+                    className="
+                      text-[30px]
+                      sm:text-[38px]
+                      tracking-[-0.04em]
+                      font-medium
+                    "
+                  >
+                    CodeLens report
+                  </h2>
 
-                            {/* Error */}
+                  <p
+                    className="
+                      mt-2
+                      max-w-[650px]
+                      truncate
+                      text-[12px]
+                      text-white/30
+                    "
+                  >
+                    {repoUrl}
+                  </p>
+                </div>
 
-                            {error && (
-                                <div
-                                    className="
-                                        mt-3
-                                        px-2
-                                        text-center
-                                        text-[11px]
-                                        text-red-300/60
-                                    "
-                                >
-                                    {error}
-                                </div>
-                            )}
-                        </div>
+                {/* New review */}
 
-                        {/* Status */}
+                <button
+                  type="button"
+                  onClick={handleNewReview}
+                  className="
+                    shrink-0
+                    h-10
+                    px-4
+                    rounded-xl
+                    border
+                    border-white/[0.09]
+                    bg-white/[0.025]
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    text-[12px]
+                    text-white/55
+                    hover:text-white
+                    hover:bg-white/[0.055]
+                    transition-all
+                  "
+                >
+                  <ArrowLeftIcon size={15} />
 
-                        <div
-                            ref={statusRef}
-                            className="
-                                mt-8
-                                flex
-                                items-center
-                                gap-3
-                                text-[8px]
-                                uppercase
-                                tracking-[0.25em]
-                                text-[#eeeae1]/20
-                            "
-                        >
-                            <span className="h-px w-8 bg-[#eeeae1]/10" />
+                  New review
+                </button>
+              </div>
 
-                            <span className="flex items-center gap-2">
-                                <span
-                                    className="
-                                        h-1
-                                        w-1
-                                        rounded-full
-                                        bg-[#eeeae1]/40
-                                    "
-                                />
+              {/* Actual ReviewResult */}
 
-                                Secure repository analysis
-                            </span>
+              <ReviewResult
+                result={result}
+              />
+            </div>
+          </section>
+        )}
 
-                            <span className="h-px w-8 bg-[#eeeae1]/10" />
-                        </div>
-                    </section>
-                )}
+        {/* ====================================================
+            FOOTER
+        ===================================================== */}
 
-                {/* =====================================
-                    LOADING
-                ===================================== */}
+        {!result && !loading && (
+          <div
+            className="
+              pb-8
+              text-center
+              text-[10px]
+              uppercase
+              tracking-[0.15em]
+              text-white/15
+            "
+          >
+            CodeLens · AI-powered code review
+          </div>
+        )}
+      </main>
 
-                {loading && (
-                    <section
-                        className="
-                            flex
-                            min-h-[calc(100vh-90px)]
-                            items-center
-                            justify-center
-                            px-6
-                        "
-                    >
-                        <div className="w-full max-w-[850px]">
-                            <Loading />
-                        </div>
-                    </section>
-                )}
+      {/* ======================================================
+          AUTH POPUP
+      ======================================================= */}
 
-                {/* =====================================
-                    RESULT
-                ===================================== */}
+      {authPopup && (
+        <div
+          className="
+            fixed
+            inset-0
+            z-[100]
+            flex
+            items-center
+            justify-center
+            p-5
+          "
+        >
+          {/* Overlay */}
 
-                {result && !loading && (
-                    <section
-                        ref={resultRef}
-                        className="
-                            min-h-screen
-                            px-6
-                            pb-24
-                            pt-[145px]
-                            sm:px-10
-                        "
-                    >
-                        <div className="mx-auto max-w-[1230px]">
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={closeAuthPopup}
+            className="
+              absolute
+              inset-0
+              bg-black/65
+              backdrop-blur-sm
+              cursor-default
+            "
+          />
 
-                            {/* =================================
-                                RESULT HEADER
-                            ================================= */}
+          {/* Modal */}
 
-                            <div
-                                className="
-                                    relative
-                                    mb-12
-                                    border-b
-                                    border-[#eeeae1]/10
-                                    pb-10
-                                "
-                            >
-                                <div
-                                    className="
-                                        flex
-                                        items-end
-                                        justify-between
-                                        gap-8
-                                    "
-                                >
-                                    <div>
+          <div
+            ref={authPopupRef}
+            className="
+              relative
+              w-full
+              max-w-[430px]
+              rounded-[24px]
+              border
+              border-white/[0.09]
+              bg-[#0c100e]
+              shadow-2xl
+              p-7
+              sm:p-8
+            "
+          >
+            {/* Close */}
 
-                                        
+            <button
+              type="button"
+              onClick={closeAuthPopup}
+              className="
+                absolute
+                top-4
+                right-4
+                w-8
+                h-8
+                rounded-lg
+                flex
+                items-center
+                justify-center
+                text-white/30
+                hover:text-white
+                hover:bg-white/[0.05]
+                transition
+              "
+            >
+              <CloseIcon size={16} />
+            </button>
 
-                                        {/* NEW TITLE */}
+            {/* Icon */}
 
-                                        <h2
-                                            className="
-                                                text-[clamp(3.5rem,6vw,6.5rem)]
-                                                font-medium
-                                                leading-[0.9]
-                                                tracking-[-0.055em]
-                                            "
-                                        >
-                                            Repository
-                                            <br />
+            <div
+              className="
+                w-12
+                h-12
+                rounded-2xl
+                border
+                border-white/[0.08]
+                bg-white/[0.035]
+                flex
+                items-center
+                justify-center
+                text-white/70
+                mb-5
+              "
+            >
+              <LockIcon size={20} />
+            </div>
 
-                                            <span className="text-[#eeeae1]/30">
-                                                Analysis.
-                                            </span>
-                                        </h2>
+            <h3
+              className="
+                text-[25px]
+                font-medium
+                tracking-[-0.035em]
+              "
+            >
+              Login to review
+            </h3>
 
-                                        {/* Small supporting text */}
+            <p
+              className="
+                mt-3
+                text-[13px]
+                leading-6
+                text-white/35
+              "
+            >
+              Create a CodeLens account or
+              login to start analyzing your
+              repositories.
+            </p>
 
-                                        <p
-                                            className="
-                                                mt-6
-                                                max-w-[500px]
-                                                text-[12px]
-                                                leading-[1.6]
-                                                text-[#eeeae1]/30
-                                            "
-                                        >
-                                            A line-by-line inspection of your
-                                            repository, distilled into the
-                                            signals that matter.
-                                        </p>
-                                    </div>
+            {/* Buttons */}
 
-                                    {/* New Review */}
+            <div className="mt-7 space-y-2.5">
+              <button
+                type="button"
+                onClick={goToLogin}
+                className="
+                  w-full
+                  h-11
+                  rounded-xl
+                  bg-[#eeeae1]
+                  text-[#080b09]
+                  text-[12px]
+                  font-medium
+                  hover:bg-white
+                  transition
+                "
+              >
+                Login
+              </button>
 
-                                    <button
-                                        type="button"
-                                        onClick={handleNewReview}
-                                        className="
-                                            group
-                                            mb-1
-                                            flex
-                                            shrink-0
-                                            items-center
-                                            gap-4
-                                            border
-                                            border-[#eeeae1]/15
-                                            px-5
-                                            py-3
-                                            text-[10px]
-                                            uppercase
-                                            tracking-[0.16em]
-                                            text-[#eeeae1]/55
-                                            transition-all
-                                            duration-300
-                                            hover:border-[#eeeae1]/40
-                                            hover:text-[#eeeae1]
-                                        "
-                                    >
-                                        <span>
-                                            New review
-                                        </span>
-
-                                        <span
-                                            className="
-                                                transition-transform
-                                                duration-300
-                                                group-hover:-translate-y-1
-                                                group-hover:translate-x-1
-                                            "
-                                        >
-                                            ↗
-                                        </span>
-                                    </button>
-                                </div>
-
-                                {/* Decorative bottom detail */}
-
-                                <div
-                                    className="
-                                        absolute
-                                        bottom-[-1px]
-                                        left-0
-                                        h-[1px]
-                                        w-24
-                                        bg-[#eeeae1]/30
-                                    "
-                                />
-                            </div>
-
-                            {/* =================================
-                                EXISTING RESULT
-                            ================================= */}
-
-                            <ReviewResult result={result} />
-                        </div>
-                    </section>
-                )}
-            </main>
+              <button
+                type="button"
+                onClick={goToSignup}
+                className="
+                  w-full
+                  h-11
+                  rounded-xl
+                  border
+                  border-white/[0.09]
+                  bg-white/[0.025]
+                  text-white/65
+                  text-[12px]
+                  hover:text-white
+                  hover:bg-white/[0.05]
+                  transition
+                "
+              >
+                Create account
+              </button>
+            </div>
+          </div>
         </div>
-    );
-}
+      )}
+
+      {/* ======================================================
+          UPGRADE POPUP
+      ======================================================= */}
+
+      {upgradePopup && (
+        <div
+          className="
+            fixed
+            inset-0
+            z-[100]
+            flex
+            items-center
+            justify-center
+            p-5
+          "
+        >
+          {/* Overlay */}
+
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={closeUpgradePopup}
+            className="
+              absolute
+              inset-0
+              bg-black/65
+              backdrop-blur-sm
+              cursor-default
+            "
+          />
+
+          {/* Modal */}
+
+          <div
+            ref={upgradePopupRef}
+            className="
+              relative
+              w-full
+              max-w-[470px]
+              rounded-[26px]
+              border
+              border-white/[0.09]
+              bg-[#0c100e]
+              shadow-2xl
+              p-7
+              sm:p-8
+            "
+          >
+            {/* Close */}
+
+            <button
+              type="button"
+              onClick={closeUpgradePopup}
+              className="
+                absolute
+                top-4
+                right-4
+                w-8
+                h-8
+                rounded-lg
+                flex
+                items-center
+                justify-center
+                text-white/30
+                hover:text-white
+                hover:bg-white/[0.05]
+                transition
+              "
+            >
+              <CloseIcon size={16} />
+            </button>
+
+            {/* Icon */}
+
+            <div
+              className="
+                w-12
+                h-12
+                rounded-2xl
+                border
+                border-white/[0.08]
+                bg-white/[0.035]
+                flex
+                items-center
+                justify-center
+                text-white/75
+                mb-5
+              "
+            >
+              <SparkIcon size={21} />
+            </div>
+
+            <div
+              className="
+                text-[10px]
+                uppercase
+                tracking-[0.18em]
+                text-white/25
+              "
+            >
+              Free plan
+            </div>
+
+            <h3
+              className="
+                mt-2
+                text-[27px]
+                font-medium
+                tracking-[-0.04em]
+              "
+            >
+              You've used all 4 reviews.
+            </h3>
+
+            <p
+              className="
+                mt-3
+                text-[13px]
+                leading-6
+                text-white/35
+              "
+            >
+              Upgrade to CodeLens Pro to
+              continue reviewing repositories
+              without the free-plan limit.
+            </p>
+
+            {/* Pricing */}
+
+            <div
+              className="
+                mt-6
+                rounded-2xl
+                border
+                border-white/[0.07]
+                bg-white/[0.025]
+                p-5
+              "
+            >
+              <div
+                className="
+                  flex
+                  items-end
+                  justify-between
+                "
+              >
+                <div>
+                  <div
+                    className="
+                      text-[11px]
+                      uppercase
+                      tracking-[0.15em]
+                      text-white/30
+                    "
+                  >
+                    CodeLens Pro
+                  </div>
+
+                  <div
+                    className="
+                      mt-2
+                      text-[31px]
+                      font-medium
+                      tracking-[-0.04em]
+                    "
+                  >
+                    $20
+                  </div>
+                </div>
+
+                <div
+                  className="
+                    text-[11px]
+                    text-white/25
+                  "
+                >
+                  one-time
+                </div>
+              </div>
+            </div>
+
+            {/* Upgrade */}
+
+            <button
+              type="button"
+              onClick={() => {
+                /*
+                  PAYMENT WILL BE CONNECTED HERE.
+
+                  Production flow:
+
+                  1. Frontend calls Node backend.
+                  2. Node creates Stripe/Razorpay order.
+                  3. User completes payment.
+                  4. Payment provider webhook reaches backend.
+                  5. Backend verifies payment.
+                  6. Backend changes:
+                       user.plan = "pro"
+                  7. User can review again.
+                */
+
+                alert(
+                  "Payment integration coming next."
+                );
+              }}
+              className="
+                mt-5
+                w-full
+                h-12
+                rounded-xl
+                bg-[#eeeae1]
+                text-[#080b09]
+                text-[12px]
+                font-medium
+                hover:bg-white
+                transition
+              "
+            >
+              Upgrade for $20
+            </button>
+
+            <div
+              className="
+                mt-3
+                text-center
+                text-[10px]
+                text-white/20
+              "
+            >
+              Secure payment · Unlimited
+              repository reviews
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default Review;

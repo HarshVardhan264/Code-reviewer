@@ -1,203 +1,155 @@
-const {
-    getRepositoryFiles,
-    getFileContent
-} = require("../services/githubService");
+const User = require("../models/User");
+const Review = require("../models/Review");
 
-const { filterCodeFiles } = require("../services/fileFilter");
-const { selectFiles } = require("../services/fileSelector");
-const { sendCodeForReview } = require("../services/reviewService");
-const { chunkCode } = require("../services/codeChunker");
+const reviewRepository = require("../services/codeReviewService");
 
+const FREE_REVIEW_LIMIT = 4;
 
-async function reviewRepository(req, res) {
-
+// ===============================
+// CREATE REVIEW
+// ===============================
+const createReview = async (req, res) => {
     try {
-
         const { repoUrl } = req.body;
 
-
-        // Validate URL
-
-        if (!repoUrl) {
-
+        if (!repoUrl || !repoUrl.trim()) {
             return res.status(400).json({
-                error: "GitHub repository URL is required"
+                success: false,
+                message: "Repository URL is required",
             });
-
         }
 
+        const user = await User.findById(req.user._id);
 
-        // Get repository files
-
-        console.log("Fetching repository files...");
-
-        const files = await getRepositoryFiles(repoUrl);
-
-        console.log(
-            `Total files found: ${files.length}`
-        );
-
-
-        // Filter source files
-
-        const codeFiles = filterCodeFiles(files);
-
-        console.log(
-            `Code files found: ${codeFiles.length}`
-        );
-
-
-        // Select files
-
-        const selectedFiles = selectFiles(
-            codeFiles,
-            10
-        );
-
-        console.log(
-    `Files selected: ${selectedFiles.length}`
-);
-
-console.log(
-    "Selected files:"
-);
-
-selectedFiles.forEach((file) => {
-    console.log(`- ${file.path}`);
-});
-
-
-        // Fetch code
-
-        const codeData = [];
-
-
-        for (const file of selectedFiles) {
-
-            try {
-
-                console.log(
-                    `Fetching: ${file.path}`
-                );
-
-                const code = await getFileContent(
-                    repoUrl,
-                    file.path
-                );
-
-
-                codeData.push({
-                    path: file.path,
-                    code: code
-                });
-
-
-            } catch (error) {
-
-                console.log(
-                    `Failed to fetch: ${file.path}`
-                );
-
-            }
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "User not found",
+            });
         }
 
-
-        // Create chunks
-
-        const allChunks = [];
-
-
-        for (const file of codeData) {
-
-            const chunks = chunkCode(
-                file.code,
-                300
-            );
-
-
-            console.log(
-                `${file.path} → ${chunks.length} chunk(s)`
-            );
-
-
-            for (const chunk of chunks) {
-
-                allChunks.push({
-
-                    filePath: file.path,
-
-                    startLine: chunk.startLine,
-
-                    endLine: chunk.endLine,
-
-                    code: chunk.code
-
-                });
-
-            }
+        // Check free review limit
+        if (
+            user.plan === "free" &&
+            user.reviewsUsed >= FREE_REVIEW_LIMIT
+        ) {
+            return res.status(402).json({
+                success: false,
+                code: "REVIEW_LIMIT_REACHED",
+                message:
+                    "You have used all 4 free repository reviews.",
+                reviewsUsed: user.reviewsUsed,
+                limit: FREE_REVIEW_LIMIT,
+            });
         }
 
+        // Run CodeLens AI review
+        const result = await reviewRepository(repoUrl.trim());
 
-        console.log(
-            `Total chunks: ${allChunks.length}`
-        );
+        // Save review
+        const review = await Review.create({
+            user: user._id,
+            repoUrl: repoUrl.trim(),
+            result,
+            status: "completed",
+        });
 
+        // Increase usage
+        if (user.plan === "free") {
+            user.reviewsUsed += 1;
+            await user.save();
+        }
 
-        // Send chunks to Python
-
-        console.log(
-            "Sending repository to AI..."
-        );
-
-
-        const reviewResult = await sendCodeForReview(
-            allChunks
-        );
-
-
-        // Return structured report
-
-        res.json({
-
+        return res.status(201).json({
             success: true,
 
-            repository: repoUrl,
+            reviewId: review._id,
 
-            filesFound: files.length,
+            repoUrl: review.repoUrl,
 
-            codeFilesFound: codeFiles.length,
+            result,
 
-            filesReviewed: codeData.length,
-
-            chunksReviewed: allChunks.length,
-
-            report: reviewResult.report
-
+            usage: {
+                used: user.reviewsUsed,
+                limit:
+                    user.plan === "free"
+                        ? FREE_REVIEW_LIMIT
+                        : null,
+                plan: user.plan,
+            },
         });
-
 
     } catch (error) {
+        console.error("Review error:", error);
 
-        console.error(
-            "Repository review error:",
-            error
-        );
-
-
-        res.status(500).json({
-
+        return res.status(500).json({
             success: false,
+            message:
+                "Something went wrong while reviewing the repository.",
+        });
+    }
+};
 
-            error: "Failed to review repository",
+// ===============================
+// REVIEW HISTORY
+// ===============================
+const getReviewHistory = async (req, res) => {
+    try {
+        const reviews = await Review.find({
+            user: req.user._id,
+        })
+            .select("_id repoUrl status createdAt")
+            .sort({ createdAt: -1 });
 
-            message: error.message
-
+        return res.json({
+            success: true,
+            reviews,
         });
 
-    }
-}
+    } catch (error) {
+        console.error("History error:", error);
 
+        return res.status(500).json({
+            success: false,
+            message: "Unable to fetch review history",
+        });
+    }
+};
+
+// ===============================
+// SINGLE REVIEW
+// ===============================
+const getReviewById = async (req, res) => {
+    try {
+        const review = await Review.findOne({
+            _id: req.params.id,
+            user: req.user._id,
+        });
+
+        if (!review) {
+            return res.status(404).json({
+                success: false,
+                message: "Review not found",
+            });
+        }
+
+        return res.json({
+            success: true,
+            review,
+        });
+
+    } catch (error) {
+        console.error("Get review error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to fetch review",
+        });
+    }
+};
 
 module.exports = {
-    reviewRepository
+    createReview,
+    getReviewHistory,
+    getReviewById,
 };

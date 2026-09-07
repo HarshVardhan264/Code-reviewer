@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
         name: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
         },
 
         email: {
@@ -13,16 +13,27 @@ const userSchema = new mongoose.Schema(
             required: true,
             unique: true,
             lowercase: true,
-            trim: true
+            trim: true,
         },
 
         password: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
+
+        plan: {
+            type: String,
+            enum: ["free", "pro"],
+            default: "free",
+        },
+
+        reviewsUsed: {
+            type: Number,
+            default: 0,
+        },
     },
     {
-        timestamps: true
+        timestamps: true,
     }
 );
 

@@ -1,5 +1,16 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+
 import { Link } from "react-router-dom";
+import gsap from "gsap";
+
+/* =========================================================
+   LENS ICON
+========================================================= */
 
 export const Lens = ({ size = "0.78em" }) => (
   <svg
@@ -28,6 +39,10 @@ export const Lens = ({ size = "0.78em" }) => (
   </svg>
 );
 
+/* =========================================================
+   ARROW ICON
+========================================================= */
+
 export const ArrowTile = () => (
   <svg
     width="13"
@@ -44,33 +59,104 @@ export const ArrowTile = () => (
   </svg>
 );
 
+/* =========================================================
+   PROFILE ICON
+========================================================= */
+
+const ProfileIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    aria-hidden="true"
+  >
+    <circle
+      cx="12"
+      cy="8"
+      r="3.5"
+      stroke="currentColor"
+      strokeWidth="1.7"
+    />
+
+    <path
+      d="M5 20c.8-3.2 3.2-5 7-5s6.2 1.8 7 5"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
 const Navbar = () => {
   const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  /* =========================
+  /* =======================================================
+     AUTH STATE
+  ======================================================= */
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  /* =======================================================
+     GSAP REFS
+  ======================================================= */
+
+  const menuRef = useRef(null);
+  const overlayRef = useRef(null);
+  const menuHeaderRef = useRef(null);
+  const menuFooterRef = useRef(null);
+
+  const menuItemsRef = useRef([]);
+
+  /* =======================================================
+     CHECK LOGIN
+  ======================================================= */
+
+  useEffect(() => {
+    const loggedIn =
+      localStorage.getItem("isLoggedIn");
+
+    setIsLoggedIn(loggedIn === "true");
+  }, []);
+
+  /* =======================================================
      SCROLL DETECTION
-  ========================= */
+  ======================================================= */
 
   useEffect(() => {
     const onScroll = () => {
-      setSolid(window.scrollY > window.innerHeight * 0.7);
+      setSolid(
+        window.scrollY >
+          window.innerHeight * 0.7
+      );
     };
 
     onScroll();
 
-    window.addEventListener("scroll", onScroll, {
-      passive: true,
-    });
+    window.addEventListener(
+      "scroll",
+      onScroll,
+      {
+        passive: true,
+      }
+    );
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener(
+        "scroll",
+        onScroll
+      );
     };
   }, []);
 
-  /* =========================
+  /* =======================================================
      LOCK BODY WHEN MENU OPEN
-  ========================= */
+  ======================================================= */
 
   useEffect(() => {
     if (menuOpen) {
@@ -83,6 +169,225 @@ const Navbar = () => {
       document.body.style.overflow = "";
     };
   }, [menuOpen]);
+
+  /* =======================================================
+     INITIAL GSAP STATE
+  ======================================================= */
+
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    const overlay = overlayRef.current;
+
+    if (!menu || !overlay) return;
+
+    gsap.set(menu, {
+      xPercent: 100,
+    });
+
+    gsap.set(overlay, {
+      opacity: 0,
+      pointerEvents: "none",
+    });
+
+    gsap.set(menuHeaderRef.current, {
+      opacity: 0,
+      x: 30,
+    });
+
+    gsap.set(menuFooterRef.current, {
+      opacity: 0,
+      y: 10,
+    });
+
+    gsap.set(menuItemsRef.current, {
+      opacity: 0,
+      x: 40,
+    });
+  }, []);
+
+  /* =======================================================
+     MENU ANIMATION
+  ======================================================= */
+
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    const overlay = overlayRef.current;
+
+    if (!menu || !overlay) return;
+
+    const items = menuItemsRef.current.filter(
+      Boolean
+    );
+
+    gsap.killTweensOf([
+      menu,
+      overlay,
+      menuHeaderRef.current,
+      menuFooterRef.current,
+      ...items,
+    ]);
+
+    /* =====================================================
+       OPEN
+    ===================================================== */
+
+    if (menuOpen) {
+      const tl = gsap.timeline();
+
+      /* Overlay */
+
+      tl.to(
+        overlay,
+        {
+          opacity: 1,
+          duration: 0.45,
+          ease: "power2.out",
+          onStart: () => {
+            overlay.style.pointerEvents =
+              "auto";
+          },
+        },
+        0
+      );
+
+      /* Panel */
+
+      tl.to(
+        menu,
+        {
+          xPercent: 0,
+          duration: 0.85,
+          ease: "power4.out",
+        },
+        0
+      );
+
+      /* Header */
+
+      tl.to(
+        menuHeaderRef.current,
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.5,
+          ease: "power3.out",
+        },
+        0.35
+      );
+
+      /* Menu items */
+
+      tl.to(
+        items,
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.55,
+          stagger: 0.075,
+          ease: "power3.out",
+        },
+        0.4
+      );
+
+      /* Footer */
+
+      tl.to(
+        menuFooterRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          ease: "power2.out",
+        },
+        0.8
+      );
+    }
+
+    /* =====================================================
+       CLOSE
+    ===================================================== */
+
+    else {
+      const tl = gsap.timeline();
+
+      /* Menu items */
+
+      tl.to(
+        items,
+        {
+          opacity: 0,
+          x: 25,
+          duration: 0.22,
+          stagger: 0.025,
+          ease: "power2.in",
+        },
+        0
+      );
+
+      /* Header */
+
+      tl.to(
+        menuHeaderRef.current,
+        {
+          opacity: 0,
+          x: 20,
+          duration: 0.25,
+          ease: "power2.in",
+        },
+        0
+      );
+
+      /* Footer */
+
+      tl.to(
+        menuFooterRef.current,
+        {
+          opacity: 0,
+          y: 8,
+          duration: 0.2,
+          ease: "power2.in",
+        },
+        0
+      );
+
+      /* Panel → right */
+
+      tl.to(
+        menu,
+        {
+          xPercent: 100,
+          duration: 0.7,
+          ease: "power4.inOut",
+        },
+        0.08
+      );
+
+      /* Overlay */
+
+      tl.to(
+        overlay,
+        {
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.inOut",
+
+          onComplete: () => {
+            overlay.style.pointerEvents =
+              "none";
+          },
+        },
+        0.15
+      );
+    }
+  }, [menuOpen]);
+
+  /* =======================================================
+     TOP NAV VISIBILITY
+  ======================================================= */
+
+  const topVisibility = solid
+    ? "pointer-events-none translate-y-[-10px] opacity-0"
+    : "translate-y-0 opacity-100";
 
   return (
     <>
@@ -102,16 +407,20 @@ const Navbar = () => {
           "
         >
           {/* =================================================
-              CODELENS LOGO
+              LOGO
           ================================================= */}
 
-         <Link to="/" className="cl-nav__mark" aria-label="CodeLens home">
-        C<Lens />
-        <span>delens</span>
-      </Link>
-      
+          <Link
+            to="/"
+            className="cl-nav__mark"
+            aria-label="CodeLens home"
+          >
+            C<Lens />
+            <span>delens</span>
+          </Link>
+
           {/* =================================================
-              MIDDLE LINKS
+              CENTER NAVIGATION
           ================================================= */}
 
           <nav
@@ -119,14 +428,10 @@ const Navbar = () => {
               flex
               items-center
               gap-[34px]
+              max-md:hidden
               transition-all
               duration-500
-              max-md:hidden
-              ${
-                solid
-                  ? "pointer-events-none translate-y-[-10px] opacity-0"
-                  : "translate-y-0 opacity-100"
-              }
+              ${topVisibility}
             `}
           >
             <a
@@ -135,7 +440,7 @@ const Navbar = () => {
                 text-[14px]
                 font-medium
                 tracking-[-0.02em]
-                text-[#eeeae1]
+                !text-[#eeeae1]
                 no-underline
                 transition-opacity
                 duration-300
@@ -151,7 +456,7 @@ const Navbar = () => {
                 text-[14px]
                 font-medium
                 tracking-[-0.02em]
-                text-[#eeeae1]
+                !text-[#eeeae1]
                 no-underline
                 transition-opacity
                 duration-300
@@ -167,7 +472,7 @@ const Navbar = () => {
                 text-[14px]
                 font-medium
                 tracking-[-0.02em]
-                text-[#eeeae1]
+                !text-[#eeeae1]
                 no-underline
                 transition-opacity
                 duration-300
@@ -182,7 +487,105 @@ const Navbar = () => {
               RIGHT SIDE
           ================================================= */}
 
-          <div className="flex justify-end">
+          <div className="flex items-center justify-end gap-3">
+
+            {/* =================================================
+                LOGIN / SIGNUP
+            ================================================= */}
+
+            {!isLoggedIn ? (
+              <>
+                {/* LOGIN */}
+
+                <Link
+                  to="/login"
+                  className={`
+                    flex
+                    h-[46px]
+                    items-center
+                    justify-center
+                    whitespace-nowrap
+                    px-[16px]
+                    text-[14px]
+                    font-medium
+                    !text-[#eeeae1]
+                    no-underline
+                    transition-all
+                    duration-500
+                    hover:opacity-60
+                    ${topVisibility}
+                  `}
+                >
+                  <span className="!text-[#eeeae1]">
+                    Log in
+                  </span>
+                </Link>
+
+                {/* SIGN UP */}
+
+                <Link
+                  to="/signup"
+                  className={`
+                    relative
+                    z-[2]
+                    flex
+                    h-[46px]
+                    min-w-[88px]
+                    items-center
+                    justify-center
+                    whitespace-nowrap
+                    bg-[#eeeae1]
+                    px-[17px]
+                    text-[14px]
+                    font-medium
+                    !text-[#0b0b0a]
+                    no-underline
+                    transition-all
+                    duration-500
+                    hover:opacity-80
+                    ${topVisibility}
+                  `}
+                >
+                  <span className="!text-[#0b0b0a]">
+                    Sign up
+                  </span>
+                </Link>
+              </>
+            ) : (
+              /* =================================================
+                 PROFILE
+              ================================================= */
+
+              <Link
+                to="/profile"
+                aria-label="Open profile"
+                className={`
+                  flex
+                  h-[46px]
+                  items-center
+                  gap-2
+                  border
+                  border-[#eeeae1]/30
+                  px-[15px]
+                  text-[14px]
+                  font-medium
+                  !text-[#eeeae1]
+                  no-underline
+                  transition-all
+                  duration-300
+                  hover:bg-[#eeeae1]
+                  hover:!text-[#0b0b0a]
+                  ${topVisibility}
+                `}
+              >
+                <ProfileIcon />
+
+                <span className="!text-inherit">
+                  Profile
+                </span>
+              </Link>
+            )}
+
             {/* =================================================
                 REVIEW A REPO
             ================================================= */}
@@ -195,11 +598,7 @@ const Navbar = () => {
                 gap-0
                 transition-all
                 duration-500
-                ${
-                  solid
-                    ? "pointer-events-none translate-y-[-10px] opacity-0"
-                    : "translate-y-0 opacity-100"
-                }
+                ${topVisibility}
               `}
             >
               <span
@@ -211,7 +610,7 @@ const Navbar = () => {
                   px-[17px]
                   text-[14px]
                   font-medium
-                  text-[#0b0b0a]
+                  !text-[#0b0b0a]
                 "
               >
                 Review a repo
@@ -225,7 +624,7 @@ const Navbar = () => {
                   items-center
                   justify-center
                   bg-[#eeeae1]
-                  text-[#0b0b0a]
+                  !text-[#0b0b0a]
                 "
               >
                 <ArrowTile />
@@ -233,7 +632,7 @@ const Navbar = () => {
             </Link>
 
             {/* =================================================
-                THREE LINE CIRCLE
+                MENU BUTTON
             ================================================= */}
 
             <button
@@ -251,7 +650,7 @@ const Navbar = () => {
                 gap-[5px]
                 rounded-full
                 bg-[#eeeae1]
-                text-[#0b0b0a]
+                !text-[#0b0b0a]
                 transition-all
                 duration-500
                 ${
@@ -274,28 +673,25 @@ const Navbar = () => {
       ===================================================== */}
 
       <div
+        ref={overlayRef}
         onClick={() => setMenuOpen(false)}
-        className={`
+        className="
           fixed
           inset-0
           z-[1050]
           bg-black/60
-          transition-opacity
-          duration-500
-          ${
-            menuOpen
-              ? "pointer-events-auto opacity-100"
-              : "pointer-events-none opacity-0"
-          }
-        `}
+          opacity-0
+          pointer-events-none
+        "
       />
 
       {/* =====================================================
-          SIDE MENU
+          SIDE PANEL
       ===================================================== */}
 
       <aside
-        className={`
+        ref={menuRef}
+        className="
           fixed
           right-0
           top-0
@@ -310,22 +706,21 @@ const Navbar = () => {
           py-8
           text-[#eeeae1]
           shadow-2xl
-          transition-transform
-          duration-700
-          ease-[cubic-bezier(0.76,0,0.24,1)]
-          ${
-            menuOpen
-              ? "translate-x-0"
-              : "translate-x-full"
-          }
-        `}
+        "
       >
         {/* =================================================
             MENU HEADER
         ================================================= */}
 
-        <div className="flex items-center justify-between">
-          {/* CODELENS */}
+        <div
+          ref={menuHeaderRef}
+          className="
+            flex
+            items-center
+            justify-between
+          "
+        >
+          {/* LOGO */}
 
           <Link
             to="/"
@@ -336,24 +731,21 @@ const Navbar = () => {
               text-[20px]
               font-medium
               tracking-[-0.05em]
-              text-[#eeeae1]
+              !text-[#eeeae1]
+              no-underline
             "
           >
             C<Lens />
+
             <span>delens</span>
           </Link>
 
-          {/* =================================================
-              CLOSE BUTTON
-          ================================================= */}
+          {/* CLOSE */}
 
           <button
             type="button"
             aria-label="Close menu"
-            onClick={(e) => {
-              e.stopPropagation();
-              setMenuOpen(false);
-            }}
+            onClick={() => setMenuOpen(false)}
             className="
               relative
               z-[1200]
@@ -367,15 +759,13 @@ const Navbar = () => {
               border
               border-[#eeeae1]/30
               bg-transparent
-              text-[#eeeae1]
+              !text-[#eeeae1]
               transition-all
               duration-300
               hover:bg-[#eeeae1]
-              hover:text-[#0b0b0a]
+              hover:!text-[#0b0b0a]
             "
           >
-            {/* CROSS LINE 1 */}
-
             <span
               className="
                 absolute
@@ -385,8 +775,6 @@ const Navbar = () => {
                 bg-current
               "
             />
-
-            {/* CROSS LINE 2 */}
 
             <span
               className="
@@ -401,13 +789,17 @@ const Navbar = () => {
         </div>
 
         {/* =================================================
-            MENU OPTIONS
+            MENU ITEMS
         ================================================= */}
 
         <nav className="mt-auto flex flex-col pb-12">
+
           {/* WHAT IT READS */}
 
           <a
+            ref={(el) => {
+              menuItemsRef.current[0] = el;
+            }}
             href="#reads"
             onClick={() => setMenuOpen(false)}
             className="
@@ -417,7 +809,8 @@ const Navbar = () => {
               text-[32px]
               font-medium
               tracking-[-0.05em]
-              text-[#eeeae1]
+              !text-[#eeeae1]
+              no-underline
               transition-all
               duration-300
               hover:pl-2
@@ -429,6 +822,9 @@ const Navbar = () => {
           {/* PROCESS */}
 
           <a
+            ref={(el) => {
+              menuItemsRef.current[1] = el;
+            }}
             href="#process"
             onClick={() => setMenuOpen(false)}
             className="
@@ -438,7 +834,8 @@ const Navbar = () => {
               text-[32px]
               font-medium
               tracking-[-0.05em]
-              text-[#eeeae1]
+              !text-[#eeeae1]
+              no-underline
               transition-all
               duration-300
               hover:pl-2
@@ -450,6 +847,9 @@ const Navbar = () => {
           {/* ABOUT */}
 
           <Link
+            ref={(el) => {
+              menuItemsRef.current[2] = el;
+            }}
             to="/about"
             onClick={() => setMenuOpen(false)}
             className="
@@ -459,7 +859,8 @@ const Navbar = () => {
               text-[32px]
               font-medium
               tracking-[-0.05em]
-              text-[#eeeae1]
+              !text-[#eeeae1]
+              no-underline
               transition-all
               duration-300
               hover:pl-2
@@ -471,6 +872,9 @@ const Navbar = () => {
           {/* REVIEW A REPO */}
 
           <Link
+            ref={(el) => {
+              menuItemsRef.current[3] = el;
+            }}
             to="/review"
             onClick={() => setMenuOpen(false)}
             className="
@@ -483,23 +887,123 @@ const Navbar = () => {
               text-[32px]
               font-medium
               tracking-[-0.05em]
-              text-[#eeeae1]
+              !text-[#eeeae1]
+              no-underline
               transition-all
               duration-300
               hover:pl-2
             "
           >
-            <span>Review a repo</span>
+            <span className="!text-[#eeeae1]">
+              Review a repo
+            </span>
 
             <ArrowTile />
           </Link>
+
+          {/* =================================================
+              AUTH OPTIONS
+          ================================================= */}
+
+          {!isLoggedIn ? (
+            <>
+              {/* LOGIN */}
+
+              <Link
+                ref={(el) => {
+                  menuItemsRef.current[4] = el;
+                }}
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="
+                  border-b
+                  border-[#eeeae1]/20
+                  py-5
+                  text-[32px]
+                  font-medium
+                  tracking-[-0.05em]
+                  !text-[#eeeae1]
+                  no-underline
+                  transition-all
+                  duration-300
+                  hover:pl-2
+                "
+              >
+                <span className="!text-[#eeeae1]">
+                  Log in
+                </span>
+              </Link>
+
+              {/* SIGN UP */}
+
+              <Link
+                ref={(el) => {
+                  menuItemsRef.current[5] = el;
+                }}
+                to="/signup"
+                onClick={() => setMenuOpen(false)}
+                className="
+                  border-b
+                  border-[#eeeae1]/20
+                  py-5
+                  text-[32px]
+                  font-medium
+                  tracking-[-0.05em]
+                  !text-[#eeeae1]
+                  no-underline
+                  transition-all
+                  duration-300
+                  hover:pl-2
+                "
+              >
+                <span className="!text-[#eeeae1]">
+                  Sign up
+                </span>
+              </Link>
+            </>
+          ) : (
+            /* PROFILE */
+
+            <Link
+              ref={(el) => {
+                menuItemsRef.current[4] = el;
+              }}
+              to="/profile"
+              onClick={() => setMenuOpen(false)}
+              className="
+                border-b
+                border-[#eeeae1]/20
+                py-5
+                text-[32px]
+                font-medium
+                tracking-[-0.05em]
+                !text-[#eeeae1]
+                no-underline
+                transition-all
+                duration-300
+                hover:pl-2
+              "
+            >
+              <span className="!text-[#eeeae1]">
+                Profile
+              </span>
+            </Link>
+          )}
         </nav>
 
         {/* =================================================
             FOOTER
         ================================================= */}
 
-        <div className="text-[10px] uppercase tracking-[0.2em] text-[#eeeae1]/40">
+        <div
+          ref={menuFooterRef}
+          className="
+            text-[10px]
+            uppercase
+            tracking-[0.2em]
+            !text-[#eeeae1]/40
+          "
+        >
           CodeLens
         </div>
       </aside>
