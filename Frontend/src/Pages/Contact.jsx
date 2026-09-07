@@ -269,7 +269,7 @@ const Contact = () => {
   return (
     <main
       ref={pageRef}
-      className="min-h-screen overflow-hidden bg-[#080808] text-[#f2f1ed]"
+      className="min-h-screen overflow-hidden bg-[#151514] text-[#f2f1ed]"
     >
       {/* =====================================================
           NAVBAR
