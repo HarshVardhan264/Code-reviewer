@@ -1,39 +1,43 @@
 # 🔎 CodeLens — Frontend
 
-> A modern, interactive frontend for **CodeLens**, an AI-powered multi-agent code review platform.
+> The frontend interface for **CodeLens**, an autonomous AI-powered code review platform.
 
-CodeLens helps developers analyze their GitHub repositories and identify **bugs, security vulnerabilities, and code-quality issues** using AI-powered agents.
+CodeLens helps developers analyze GitHub repositories and identify **bugs, security vulnerabilities, and code-quality issues** using a multi-agent AI system.
 
-The frontend provides a clean workspace where users can submit repositories, view AI-generated reviews, track review history, and manage their account.
+The frontend provides the interface for authentication, repository submission, AI review results, user profiles, review history, and usage information.
 
 ---
 
 ## ✨ Features
 
-* 🔐 **Authentication** — Signup and login with JWT-based authentication
-* 🔍 **AI Code Review** — Submit a GitHub repository for automated analysis
-* 📊 **Review Dashboard** — View code health scores and issue severity
-* 🐛 **Bug Detection** — Review results from the Bug Analysis Agent
-* 🛡️ **Security Analysis** — Identify potential security vulnerabilities
-* 🧹 **Code Quality** — Detect maintainability and quality issues
+* 🔐 **Authentication** — Login and signup interface
+* 🏠 **Landing Page** — Introduction to the CodeLens platform
+* 📖 **About Page** — Overview of how CodeLens works
+* 📩 **Contact Page** — Contact interface
+* 🔍 **Repository Review** — Submit a GitHub repository for analysis
+* 📊 **Review Results** — Display structured AI-generated findings
+* 👤 **User Profile** — Manage and view user information
 * 📜 **Review History** — Access previous repository reviews
-* ⚡ **Animated UI** — Smooth interactions and page transitions
-* 📱 **Responsive Design** — Works across desktop and mobile screens
-* 🌙 **Dark Developer-Focused UI** — Designed for a modern coding experience
+* 📈 **Usage Information** — Track available reviews
+* 💳 **Upgrade Interface** — Pro upgrade experience
+* ⚡ **Smooth Animations** — Interactive UI animations and transitions
+* 📱 **Responsive UI** — Designed for different screen sizes
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Technology       | Purpose                     |
-| ---------------- | --------------------------- |
-| **React.js**     | Frontend framework          |
-| **Vite**         | Development & build tooling |
-| **Tailwind CSS** | Styling                     |
-| **GSAP**         | Animations & interactions   |
-| **React Router** | Client-side routing         |
-| **Lucide React** | UI icons                    |
-| **Fetch API**    | Backend communication       |
+| Technology             | Purpose                       |
+| ---------------------- | ----------------------------- |
+| **React**              | User interface                |
+| **Vite**               | Development and build tooling |
+| **Tailwind CSS**       | Styling                       |
+| **JavaScript**         | Application logic             |
+| **React Router**       | Client-side routing           |
+| **Axios**              | API communication             |
+| **GSAP**               | Animations                    |
+| **GSAP ScrollTrigger** | Scroll-based animations       |
+| **Motion**             | UI animations                 |
 
 ---
 
@@ -43,21 +47,21 @@ The frontend provides a clean workspace where users can submit repositories, vie
 frontend/
 │
 ├── public/
-│   └── assets/
 │
 ├── src/
+│   ├── assets/
+│   │
 │   ├── components/
-│   │   ├── Navbar.jsx
-│   │   ├── Sidebar.jsx
-│   │   └── ...
+│   │   ├── about/
+│   │   └── Navbar.jsx
 │   │
 │   ├── pages/
 │   │   ├── Home.jsx
-│   │   ├── Review.jsx
-│   │   ├── History.jsx
+│   │   ├── About.jsx
+│   │   ├── Contact.jsx
 │   │   ├── Login.jsx
 │   │   ├── Signup.jsx
-│   │   └── ...
+│   │   └── Review.jsx
 │   │
 │   ├── App.jsx
 │   ├── main.jsx
@@ -65,8 +69,90 @@ frontend/
 │
 ├── package.json
 ├── vite.config.js
+├── tailwind.config.js
 └── README.md
 ```
+
+---
+
+## 🔄 Frontend Flow
+
+```text
+User
+ │
+ ▼
+React Application
+ │
+ ├── Login / Signup
+ │
+ ├── Home
+ │
+ ├── Repository Review
+ │
+ └── Review Results
+          │
+          ▼
+      Axios Request
+          │
+          ▼
+     Auth / API Server
+```
+
+The frontend communicates with the backend through API requests and displays the processed review results to the user.
+
+---
+
+## 🔗 Code Review Flow
+
+```text
+GitHub Repository URL
+          │
+          ▼
+     Review Page
+          │
+          ▼
+      Axios Request
+          │
+          ▼
+    Node.js / Express
+          │
+          ▼
+   Python AI Backend
+          │
+          ▼
+       LangGraph
+          │
+    ┌─────┼─────┐
+    ▼     ▼     ▼
+   Bug  Security Quality
+  Agent   Agent   Agent
+    │     │     │
+    └─────┼─────┘
+          ▼
+     Final Agent
+          │
+          ▼
+    Structured Report
+          │
+          ▼
+     Review Results
+```
+
+---
+
+## 🎨 Design
+
+CodeLens follows a modern **developer-focused interface** designed to make AI-powered code review feel like a dedicated developer tool.
+
+The frontend focuses on:
+
+* Clean visual hierarchy
+* Smooth page transitions
+* Interactive animations
+* Responsive layouts
+* Clear review information
+* Simple navigation
+* Focused developer workflows
 
 ---
 
@@ -75,8 +161,8 @@ frontend/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-cd YOUR_REPOSITORY/frontend
+git clone <repository-url>
+cd CodeLens/frontend
 ```
 
 ### 2. Install dependencies
@@ -85,13 +171,21 @@ cd YOUR_REPOSITORY/frontend
 npm install
 ```
 
-### 3. Start the development server
+### 3. Configure the API
+
+Create a `.env` file if required by the project:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+### 4. Start the development server
 
 ```bash
 npm run dev
 ```
 
-The frontend will be available at:
+The frontend will run on:
 
 ```text
 http://localhost:5173
@@ -99,100 +193,21 @@ http://localhost:5173
 
 ---
 
-## 🔗 Backend Connection
-
-The frontend communicates with the CodeLens backend through REST APIs.
-
-For local development, make sure the backend is running on:
-
-```text
-http://localhost:5000
-```
-
-Example review request:
-
-```text
-POST /api/review
-```
-
-Authentication is handled using a JWT Bearer token.
-
----
-
-## 🔄 Application Flow
-
-```text
-User
- │
- ▼
-Login / Signup
- │
- ▼
-CodeLens Workspace
- │
- ▼
-Enter GitHub Repository URL
- │
- ▼
-Submit Review
- │
- ▼
-CodeLens Backend
- │
- ▼
-AI Review Agents
- ├── Bug Agent
- ├── Security Agent
- └── Quality Agent
- │
- ▼
-Review Results
- │
- ├── Code Health Score
- ├── Critical Issues
- ├── High Issues
- ├── Medium Issues
- └── Detailed Feedback
- │
- ▼
-Review History
-```
-
----
-
-## 🎨 Design Philosophy
-
-The CodeLens frontend focuses on creating a **developer-first experience** rather than a typical AI dashboard.
-
-The interface combines:
-
-* Minimal visual hierarchy
-* Smooth animations
-* Dark, earthy tones
-* Rounded UI elements
-* Interactive transitions
-* Clear review feedback
-* Focused developer workflows
-
-The goal is to make automated code review feel like an integrated developer tool rather than another generic AI interface.
-
----
-
 ## 🧑‍💻 Development
 
-Run the development server:
+### Start development server
 
 ```bash
 npm run dev
 ```
 
-Build the production version:
+### Create production build
 
 ```bash
 npm run build
 ```
 
-Preview the production build:
+### Preview production build
 
 ```bash
 npm run preview
@@ -200,9 +215,25 @@ npm run preview
 
 ---
 
+## 🔌 Backend
+
+The frontend is designed to work with the CodeLens application backend.
+
+The backend handles:
+
+* Authentication
+* User accounts
+* Review history
+* GitHub repository processing
+* Communication with the Python AI backend
+
+The frontend communicates with these services through HTTP API requests.
+
+---
+
 ## ⭐ Support
 
-If you find **CodeLens** useful or interesting, consider giving the repository a **⭐ Star** on GitHub.
+If you find **CodeLens** interesting or useful, consider giving the repository a **⭐ Star** on GitHub.
 
 Your support helps the project gain visibility and motivates further development.
 
@@ -211,4 +242,3 @@ Your support helps the project gain visibility and motivates further development
 <p align="center">
   Built with ❤️ for developers who want better code.
 </p>
-
